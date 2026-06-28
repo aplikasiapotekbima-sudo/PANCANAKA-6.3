@@ -8,7 +8,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
-import { supabase, isSupabaseConfigured, getSharedSetting, saveSharedSetting } from "../../lib/supabase";
+import { supabase, isSupabaseConfigured } from "../../lib/supabaseClient";
+import { getSharedSetting, saveSharedSetting } from "../../lib/supabase";
 
 // ── Konstanta ─────────────────────────────────────────────────────────────────
 const DEV_EMAIL = "dev@bima.local";
