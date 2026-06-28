@@ -2651,20 +2651,30 @@ function RealtimeIndicator() {
     offline:    { dot: "#ef4444", label: "Offline", title: "Supabase tidak dikonfigurasi" },
   }[status];
 
+  const statusImg = {
+    live:       "/icons/status-live.png",
+    polling:    "/icons/status-live-sync.png",
+    connecting: "/icons/status-live-sync.png",
+    offline:    "/icons/status-offline.png",
+  }[status];
+
   return (
     <div title={config.title} style={{
       display: "flex", alignItems: "center", gap: 5,
-      padding: "3px 10px", borderRadius: 20, marginRight: 8,
+      padding: "2px 8px", borderRadius: 20, marginRight: 8,
       background: status === "live" ? "#f0fdf4" : status === "polling" ? "#fef3c7" : "#f8fafc",
       border: `1px solid ${status === "live" ? "#bbf7d0" : status === "polling" ? "#fcd34d" : "#e2e8f0"}`,
       cursor: "default", flexShrink: 0,
     }}>
-      <span style={{
-        width: 7, height: 7, borderRadius: "50%",
-        background: config.dot, display: "inline-block",
-        boxShadow: status === "live" ? `0 0 0 2px ${config.dot}40` : "none",
-        animation: status === "live" ? "rtpulse 2s infinite" : "none",
-      }} />
+      <img
+        src={statusImg}
+        alt={config.label}
+        style={{
+          width: 28, height: 28, objectFit: "contain",
+          animation: status === "live" ? "rtpulse 2s infinite" : "none",
+          filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.15))",
+        }}
+      />
       <span style={{ fontSize: 11, fontWeight: 600, color: status === "live" ? "#166534" : status === "polling" ? "#92400e" : "#64748b" }}>
         {config.label}
       </span>
@@ -2720,20 +2730,20 @@ export default function App() {
   const isDokter = currentUser.role === "dokter";
 
   const fullNav = [
-    { id: "cashier", label: "Kasir", icon: "💰" },
-    { id: "eresep-dokter", label: "E-Resep Dokter", icon: "🩺" },
-    { id: "rekam-medis", label: "Rekam Medis", icon: "📁" },
-    { id: "eresep-apoteker", label: "E-Resep Apoteker", icon: "⚗️" },
-    { id: "copy-resep", label: "Salinan Resep", icon: "📋" },
-    { id: "history", label: "Riwayat", icon: "📂" },
-    { id: "doctors", label: "Dokter", icon: "👨‍⚕️" },
-    { id: "reports", label: "Laporan", icon: "📊" },
-    { id: "settings", label: "Nota", icon: "⚙️" },
-    { id: "prescription-settings", label: "Kop Resep", icon: "📄" },
-    { id: "copy-resep-settings", label: "Kop Salinan Resep", icon: "🏪" },
-    { id: "account", label: "Akun", icon: "🔐" },
+    { id: "cashier", label: "Kasir", icon: null, iconImg: "/icons/nav-kasir.png" },
+    { id: "eresep-dokter", label: "E-Resep Dokter", icon: null, iconImg: "/icons/nav-eresep-dokter.png" },
+    { id: "rekam-medis", label: "Rekam Medis", icon: null, iconImg: "/icons/nav-rekam-medis.png" },
+    { id: "eresep-apoteker", label: "E-Resep Apoteker", icon: null, iconImg: "/icons/nav-eresep-apoteker.png" },
+    { id: "copy-resep", label: "Salinan Resep", icon: null, iconImg: "/icons/nav-salinan-resep.png" },
+    { id: "history", label: "Riwayat", icon: null, iconImg: "/icons/nav-riwayat.png" },
+    { id: "doctors", label: "Dokter", icon: null, iconImg: "/icons/nav-dokter.png" },
+    { id: "reports", label: "Laporan", icon: null, iconImg: "/icons/nav-laporan.png" },
+    { id: "settings", label: "Nota", icon: null, iconImg: "/icons/nav-nota.png" },
+    { id: "prescription-settings", label: "Kop Resep", icon: null, iconImg: "/icons/nav-kop-resep.png" },
+    { id: "copy-resep-settings", label: "Kop Salinan Resep", icon: null, iconImg: "/icons/nav-kop-salinan-resep.png" },
+    { id: "account", label: "Akun", icon: null, iconImg: "/icons/nav-user.png" },
     ...(currentUser?.email === "dev@bima.local"
-      ? [{ id: "dev-panel", label: "Dev Panel", icon: "🛠️" }]
+      ? [{ id: "dev-panel", label: "Dev Panel", icon: "🛠️", iconImg: null }]
       : []),
   ];
 
@@ -2776,7 +2786,7 @@ export default function App() {
         <div style={{ display: "flex", gap: 0, flex: 1, overflowX: "auto" }}>
           {nav.map((n) => (
             <button key={n.id} onClick={() => setPage(n.id)} style={{
-              padding: "0 16px", border: "none", background: "none", cursor: "pointer",
+              padding: "4px 16px", border: "none", background: "none", cursor: "pointer",
               fontSize: 13.5, fontFamily: "var(--font)",
               color: effectivePage === n.id ? "var(--brand)" : "var(--text-secondary)",
               borderBottom: `2.5px solid ${effectivePage === n.id ? "var(--brand)" : "transparent"}`,
@@ -2785,7 +2795,10 @@ export default function App() {
               whiteSpace: "nowrap", transition: "color 0.15s, border-color 0.15s",
               display: "flex", alignItems: "center", gap: 6,
             }}>
-              <span style={{ fontSize: 14 }}>{n.icon}</span>
+              {n.iconImg
+                ? <img src={n.iconImg} alt="" style={{ width: 26, height: 26, objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.18))" }} />
+                : <span style={{ fontSize: 14 }}>{n.icon}</span>
+              }
               {n.label}
               {n.id === "eresep-apoteker" && (() => { const w = prescriptions.filter(rx => rx.status === "MENUNGGU_DISPENSING").length; return w > 0 ? (<span style={{ background: "#f59e0b", color: "#fff", fontSize: 10, borderRadius: 10, padding: "1px 6px", fontWeight: 700 }}>{w}</span>) : null; })()}
               {n.id === "copy-resep" && copyResepList.length > 0 && (
@@ -2800,7 +2813,11 @@ export default function App() {
         {/* Right: user + date + logout */}
         <div style={{ display: "flex", alignItems: "center", gap: 14, paddingLeft: 16, borderLeft: "1.5px solid var(--border-mid)", marginLeft: 8, whiteSpace: "nowrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 16 }}>{isDokter ? "🩺" : "⚗️"}</span>
+            <img
+              src={isDokter ? "/icons/nav-eresep-dokter.png" : "/icons/nav-apoteker.png"}
+              alt={isDokter ? "Dokter" : "Apoteker"}
+              style={{ width: 28, height: 28, objectFit: "contain", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.18))" }}
+            />
             <div style={{ lineHeight: 1.2 }}>
               <div style={{ fontSize: 12.5, fontWeight: 600, color: "var(--text-primary)" }}>{currentUser.full_name}</div>
               <div style={{ fontSize: 10.5, color: "var(--text-muted)" }}>{ROLE_LABELS[currentUser.role]}</div>
