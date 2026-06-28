@@ -1,0 +1,256 @@
+/* ═══════════════════════════════════════════════════════════
+   KASIR KLINIK — Global Design System
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* Brand */
+  --brand:        #1a6bc4;
+  --brand-dark:   #1358a3;
+  --brand-light:  #dbeafe;
+  --brand-mid:    #93c5fd;
+
+  /* Neutrals — light mode */
+  --bg-page:      #f0f4f8;
+  --bg-card:      #ffffff;
+  --bg-input:     #f8fafc;
+  --bg-hover:     #f1f5f9;
+  --bg-selected:  #eff6ff;
+
+  --border-strong:  #cbd5e1;
+  --border-mid:     #e2e8f0;
+  --border-light:   #f1f5f9;
+
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+  --text-placeholder: #b0bec5;
+
+  /* Status */
+  --green-bg: #f0fdf4; --green-border: #bbf7d0; --green-text: #166534;
+  --red-bg:   #fff1f2; --red-border:   #fecdd3; --red-text:   #9f1239;
+  --amber-bg: #fffbeb; --amber-border: #fde68a; --amber-text: #92400e;
+  --blue-bg:  #eff6ff; --blue-border:  #bfdbfe; --blue-text:  #1e40af;
+  --purple-bg:#faf5ff; --purple-border:#e9d5ff; --purple-text:#6b21a8;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:  0 4px 12px rgba(0,0,0,.10), 0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg:  0 10px 30px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.08);
+  --shadow-dropdown: 0 8px 24px rgba(0,0,0,.14), 0 2px 8px rgba(0,0,0,.08);
+
+  /* Radii */
+  --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-xl: 18px;
+
+  /* Typography */
+  --font: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* CSS vars consumed by existing App.jsx inline-styles */
+  --color-background-primary:    var(--bg-card);
+  --color-background-secondary:  var(--bg-input);
+  --color-background-tertiary:   var(--bg-page);
+  --color-text-primary:          var(--text-primary);
+  --color-text-secondary:        var(--text-secondary);
+  --color-border-secondary:      var(--border-strong);
+  --color-border-tertiary:       var(--border-mid);
+  --font-sans:                   var(--font);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { margin: 0; background: var(--bg-page); }
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100svh;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Scrollbar ───────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+/* ── Focus ring ──────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* ── Dropdown (shared) ───────────────────────────────── */
+.kk-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  background: #ffffff;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-dropdown);
+  z-index: 300;
+  overflow: hidden;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.kk-dropdown-item {
+  padding: 9px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-light);
+  background: #ffffff;
+  transition: background 0.1s;
+  user-select: none;
+}
+
+.kk-dropdown-item:last-child { border-bottom: none; }
+
+.kk-dropdown-item:hover,
+.kk-dropdown-item.active {
+  background: var(--bg-selected);
+  color: var(--brand-dark);
+}
+
+/* ── Inputs ──────────────────────────────────────────── */
+.kk-input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--border-strong);
+  background: #ffffff;
+  color: var(--text-primary);
+  font-size: 13.5px;
+  font-family: var(--font);
+  line-height: 1.4;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+.kk-input:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(26,107,196,.12);
+}
+.kk-input::placeholder { color: var(--text-placeholder); }
+.kk-input.error { border-color: #ef4444; }
+
+/* ── Buttons ─────────────────────────────────────────── */
+.kk-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 18px;
+  border-radius: var(--r-sm);
+  border: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+.kk-btn:active { transform: scale(0.98); }
+
+.kk-btn-primary { background: var(--brand); color: #fff; box-shadow: var(--shadow-sm); }
+.kk-btn-primary:hover { background: var(--brand-dark); box-shadow: var(--shadow-md); }
+
+.kk-btn-secondary {
+  background: #ffffff; color: var(--text-secondary);
+  border: 1.5px solid var(--border-strong);
+}
+.kk-btn-secondary:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.kk-btn-ghost { background: transparent; color: var(--text-secondary); border: 1.5px solid transparent; }
+.kk-btn-ghost:hover { background: var(--bg-hover); }
+
+.kk-btn-danger { background: #ef4444; color: #fff; }
+.kk-btn-danger:hover { background: #dc2626; }
+
+.kk-btn-sm { padding: 5px 10px; font-size: 12px; }
+.kk-btn-lg { padding: 12px 24px; font-size: 15px; font-weight: 600; }
+.kk-btn-block { width: 100%; }
+
+/* ── Cards ───────────────────────────────────────────── */
+.kk-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-mid);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Section label ───────────────────────────────────── */
+.kk-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* ── Badge ───────────────────────────────────────────── */
+.kk-badge {
+  display: inline-flex; align-items: center;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+/* ── Date range quick buttons ────────────────────────── */
+.kk-date-quick {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.kk-date-quick button {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 20px;
+  border: 1.5px solid var(--border-strong);
+  background: #ffffff;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.kk-date-quick button:hover,
+.kk-date-quick button.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+/* ── Tooltip helper ──────────────────────────────────── */
+.kk-field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+  letter-spacing: 0.1px;
+}
+
+/* ── Medicine row ────────────────────────────────────── */
+.kk-med-row {
+  background: #ffffff;
+  border: 1.5px solid var(--border-mid);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s;
+}
+.kk-med-row:focus-within { border-color: var(--brand-mid); }
+
+/* ── Print (preserve existing) ──────────────────────── */
+@media print {
+  body { background: white; }
+}

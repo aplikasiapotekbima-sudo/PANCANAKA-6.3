@@ -1,0 +1,52 @@
+# .github/workflows/backup-database.yml
+#
+# Backup harian otomatis untuk database Supabase (lengkap, bagian dari Poin
+# Prioritas #5 — sebelumnya hanya instruksi manual di dashboard, sekarang
+# benar-benar terjadwal & tercatat di histori Actions).
+#
+# SETUP (sekali saja):
+#   Repo → Settings → Secrets and variables → Actions → New repository secret
+#   Tambahkan 5 secret ini:
+#     SUPABASE_DB_URL
+#     BACKUP_S3_ENDPOINT
+#     BACKUP_S3_BUCKET
+#     BACKUP_S3_ACCESS_KEY
+#     BACKUP_S3_SECRET_KEY
+#
+# Cron di bawah jalan setiap hari jam 02:00 WIB (19:00 UTC hari sebelumnya).
+# Bisa juga dipicu manual lewat tab "Actions" → pilih workflow ini → "Run workflow".
+
+name: Backup Database Harian
+
+on:
+  schedule:
+    - cron: "0 19 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client & AWS CLI
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y postgresql-client awscli
+
+      - name: Jalankan backup
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_S3_ENDPOINT: ${{ secrets.BACKUP_S3_ENDPOINT }}
+          BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+          BACKUP_S3_ACCESS_KEY: ${{ secrets.BACKUP_S3_ACCESS_KEY }}
+          BACKUP_S3_SECRET_KEY: ${{ secrets.BACKUP_S3_SECRET_KEY }}
+        run: |
+          chmod +x ./scripts/backup-database.sh
+          ./scripts/backup-database.sh
+
+      - name: Beri tahu kalau gagal
+        if: failure()
+        run: |
+          echo "::error::Backup database GAGAL — cek log di atas. Jangan diamkan kegagalan ini lebih dari 1 hari; backup yang berhenti diam-diam sama bahayanya dengan tidak ada backup sama sekali."
