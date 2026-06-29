@@ -6,6 +6,9 @@
 // Supabase, bukan dari blob JSON.
 
 import { useState, useEffect } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 import {
   searchPatients,
   getAllergies,
@@ -20,17 +23,17 @@ import NewPatientModal from "../../components/rekam-medis/NewPatientModal";
 import SoapEncounterModal from "../../components/rekam-medis/SoapEncounterModal";
 
 const SEVERITY_STYLE = {
-  ringan: { c: "#92400e", bg: "#fffbeb", b: "#fcd34d" },
-  sedang: { c: "#9a3412", bg: "#fff7ed", b: "#fdba74" },
-  berat: { c: "#991b1b", bg: "#fef2f2", b: "#fca5a5" },
-  "tidak diketahui": { c: "#374151", bg: "#f3f4f6", b: "#d1d5db" },
+  ringan: { c: "#976d09", bg: "#fff9eb", b: "#ffc94a" },
+  sedang: { c: "#9f730d", bg: "#fffaed", b: "#ffd572" },
+  berat: { c: "#9e161d", bg: "#fef2f2", b: "#ffa2a7" },
+  "tidak diketahui": { c: "#363e52", bg: "#f3f4f6", b: "#d1d4db" },
 };
 
 const STATUS_STYLE = {
-  UMUM: { c: "#374151", bg: "#f3f4f6", b: "#d1d5db" },
-  BPJS: { c: "#1d4ed8", bg: "#eff6ff", b: "#bfdbfe" },
-  SKTM: { c: "#9a3412", bg: "#fff7ed", b: "#fdba74" },
-  GRATIS: { c: "#166534", bg: "#f0fdf4", b: "#bbf7d0" },
+  UMUM: { c: "#363e52", bg: "#f3f4f6", b: "#d1d4db" },
+  BPJS: { c: "#1652df", bg: "#eff4ff", b: "#bed2ff" },
+  SKTM: { c: "#9f730d", bg: "#fffaed", b: "#ffd572" },
+  GRATIS: { c: "#136840", bg: "#effef7", b: "#b9f9db" },
 };
 
 const cardStyle = {
@@ -94,23 +97,23 @@ function EncounterCard({ enc, onEdit, onDelete }) {
         </div>
       </div>
 
-      <SoapBlock letter="S" color="#1d4ed8" bg="#eff6ff" title="Anamnesis" hidden={!enc.anamnesis}>
+      <SoapBlock letter="S" color="#1652df" bg="#eff4ff" title="Anamnesis" hidden={!enc.anamnesis}>
         <SoapRow label="Keluhan Utama" value={enc.anamnesis} />
       </SoapBlock>
 
-      <SoapBlock letter="O" color="#9a3412" bg="#fff7ed" title="Vital Sign & Pemeriksaan" hidden={!hasVitals && !enc.supporting_exam}>
+      <SoapBlock letter="O" color="#9f730d" bg="#fffaed" title="Vital Sign & Pemeriksaan" hidden={!hasVitals && !enc.supporting_exam}>
         <SoapRow label="TD / RR / Nadi / Suhu" value={[enc.vs_td, enc.vs_rr && `${enc.vs_rr} x/mnt`, enc.vs_nadi && `${enc.vs_nadi} x/mnt`, enc.vs_suhu && `${enc.vs_suhu} °C`].filter(Boolean).join(" · ") || null} />
         <SoapRow label="BB / TB / LP" value={[enc.pf_bb && `${enc.pf_bb} kg`, enc.pf_tb && `${enc.pf_tb} cm`, enc.pf_lp && `${enc.pf_lp} cm`].filter(Boolean).join(" · ") || null} />
         <SoapRow label="Penunjang / Rujukan" value={enc.supporting_exam} />
       </SoapBlock>
 
-      <SoapBlock letter="A" color="#166534" bg="#f0fdf4" title="Diagnosis" hidden={!enc.diagnosis && !enc.differential_diagnosis && !enc.nursing_diagnosis}>
+      <SoapBlock letter="A" color="#136840" bg="#effef7" title="Diagnosis" hidden={!enc.diagnosis && !enc.differential_diagnosis && !enc.nursing_diagnosis}>
         <SoapRow label="Diagnosis" value={[enc.diagnosis, enc.icd10_code && `(${enc.icd10_code})`].filter(Boolean).join(" ") || null} />
         <SoapRow label="DD" value={enc.differential_diagnosis} />
         <SoapRow label="Diagnosis Keperawatan" value={enc.nursing_diagnosis} />
       </SoapBlock>
 
-      <SoapBlock letter="P" color="#92400e" bg="#fffbeb" title="Rencana Asuhan" hidden={!enc.therapy_plan && !enc.nursing_care}>
+      <SoapBlock letter="P" color="#976d09" bg="#fff9eb" title="Rencana Asuhan" hidden={!enc.therapy_plan && !enc.nursing_care}>
         <SoapRow label="Terapi" value={enc.therapy_plan} />
         <SoapRow label="KIE / Asuhan Keperawatan" value={enc.nursing_care} />
       </SoapBlock>
@@ -122,7 +125,7 @@ function EncounterCard({ enc, onEdit, onDelete }) {
   );
 }
 
-export default function PageRekamMedis({ onCreateRecipeFor, doctors, currentUser }) {
+export default function PageRekamMedis({ onCreateRecipeFor, doctors, currentUser, settings }) {
   const [list, setList] = useState([]);
   const [q, setQ] = useState("");
   const [listLoading, setListLoading] = useState(false);
@@ -232,6 +235,260 @@ export default function PageRekamMedis({ onCreateRecipeFor, doctors, currentUser
     refreshHistory();
   };
 
+  // ── Export Rekam Medis (PDF) ──────────────────────────────────────────────
+  const handleExportPdf = () => {
+    if (!selected) return;
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const clinicName = settings?.clinicName || "Klinik";
+    const clinicAddress = settings?.address || "";
+    const clinicPhone = settings?.phone || "";
+    const clinicLogo = settings?.logo || "";
+    const BRAND = [27, 42, 82]; // navy — selaras tema Pancanaka
+    let y = 15;
+
+    const checkPageBreak = (needed = 20) => {
+      if (y + needed > pageHeight - 15) {
+        doc.addPage();
+        y = 15;
+      }
+    };
+
+    // Header klinik (kop)
+    if (clinicLogo) {
+      try {
+        const fmtMatch = /^data:image\/(png|jpe?g|webp);base64,/i.exec(clinicLogo);
+        const fmt = fmtMatch ? fmtMatch[1].toUpperCase().replace("JPG", "JPEG") : "PNG";
+        const logoW = 18, logoH = 18;
+        doc.addImage(clinicLogo, fmt, pageWidth / 2 - logoW / 2, y, logoW, logoH);
+        y += logoH + 3;
+      } catch (e) {
+        // logo gagal dimuat (format tidak didukung) — lanjut tanpa logo
+      }
+    }
+    doc.setFontSize(14);
+    doc.setFont(undefined, "bold");
+    doc.text(clinicName, pageWidth / 2, y, { align: "center" });
+    y += 6;
+    doc.setFontSize(9);
+    doc.setFont(undefined, "normal");
+    if (clinicAddress) { doc.text(clinicAddress, pageWidth / 2, y, { align: "center" }); y += 5; }
+    if (clinicPhone) { doc.text("Telp: " + clinicPhone, pageWidth / 2, y, { align: "center" }); y += 5; }
+    doc.setLineWidth(0.5);
+    doc.line(14, y, pageWidth - 14, y);
+    y += 6;
+
+    doc.setFontSize(12);
+    doc.setFont(undefined, "bold");
+    doc.text("REKAM MEDIS PASIEN", pageWidth / 2, y, { align: "center" });
+    y += 8;
+
+    // Profil pasien
+    doc.setFontSize(10);
+    doc.setFont(undefined, "bold");
+    doc.text("Data Pasien", 14, y);
+    y += 2;
+    autoTable(doc, {
+      startY: y,
+      theme: "grid",
+      body: [
+        ["Nama", selected.name || "-", "No. RM", selected.rm_number || "-"],
+        ["NIK", selected.nik || "-", "No. KK", selected.kk_number || "-"],
+        ["Jenis Kelamin", selected.gender === "L" ? "Laki-laki" : selected.gender === "P" ? "Perempuan" : "-", "Tgl Lahir / Umur", selected.birth_date ? `${selected.birth_date} (${calcAge(selected.birth_date)} thn)` : "-"],
+        ["No. HP", selected.phone || "-", "Status", selected.status || "-"],
+        ["Agama", selected.religion || "-", "Pekerjaan", selected.occupation || "-"],
+        ["No. BPJS/SKTM", selected.insurance_number || "-", "", ""],
+        ["Alamat", { content: selected.address || "-", colSpan: 3 }, "", ""],
+        ["Riwayat Penyakit Kronis", { content: selected.chronic_conditions || "-", colSpan: 3 }, "", ""],
+      ],
+      styles: { fontSize: 8.5, cellPadding: 2 },
+      columnStyles: { 0: { fontStyle: "bold", cellWidth: 38 }, 2: { fontStyle: "bold", cellWidth: 38 } },
+      margin: { left: 14, right: 14 },
+    });
+    y = doc.lastAutoTable.finalY + 8;
+
+    // Riwayat alergi
+    checkPageBreak(20);
+    doc.setFontSize(10);
+    doc.setFont(undefined, "bold");
+    doc.text("Riwayat Alergi", 14, y);
+    y += 2;
+    const allergyBody = allergies.length > 0
+      ? allergies.map((a) => [a.allergen, a.severity, a.note || "-"])
+      : [["Tidak ada alergi aktif tercatat.", "", ""]];
+    autoTable(doc, {
+      startY: y,
+      head: [["Alergen", "Tingkat Keparahan", "Catatan"]],
+      body: allergyBody,
+      styles: { fontSize: 8.5 },
+      headStyles: { fillColor: BRAND },
+      margin: { left: 14, right: 14 },
+    });
+    y = doc.lastAutoTable.finalY + 8;
+
+    // Riwayat kunjungan SOAP
+    checkPageBreak(25);
+    doc.setFontSize(10);
+    doc.setFont(undefined, "bold");
+    doc.text("Riwayat Kunjungan (SOAP)", 14, y);
+    y += 7;
+
+    if (history.encounters.length === 0) {
+      doc.setFontSize(8.5);
+      doc.setFont(undefined, "normal");
+      doc.text("Belum ada kunjungan tercatat.", 14, y);
+      y += 6;
+    } else {
+      history.encounters.forEach((enc) => {
+        checkPageBreak(35);
+        const tanggal = new Date(enc.visit_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+        const waktu = [enc.time_start && `${enc.time_start}${enc.time_end ? `–${enc.time_end}` : ""}`, enc.room_destination].filter(Boolean).join(" · ");
+        doc.setFontSize(9);
+        doc.setFont(undefined, "bold");
+        doc.text(`${tanggal}${waktu ? "  ·  " + waktu : ""}`, 14, y);
+        y += 4;
+
+        const rows = [];
+        if (enc.anamnesis) rows.push(["S — Anamnesis", enc.anamnesis]);
+        const vitals = [enc.vs_td, enc.vs_rr && `${enc.vs_rr} x/mnt`, enc.vs_nadi && `${enc.vs_nadi} x/mnt`, enc.vs_suhu && `${enc.vs_suhu} °C`].filter(Boolean).join(" · ");
+        const antro = [enc.pf_bb && `${enc.pf_bb} kg`, enc.pf_tb && `${enc.pf_tb} cm`, enc.pf_lp && `${enc.pf_lp} cm`].filter(Boolean).join(" · ");
+        if (vitals) rows.push(["O — Vital Sign", vitals]);
+        if (antro) rows.push(["O — BB/TB/LP", antro]);
+        if (enc.supporting_exam) rows.push(["O — Penunjang", enc.supporting_exam]);
+        if (enc.diagnosis) rows.push(["A — Diagnosis", [enc.diagnosis, enc.icd10_code && `(${enc.icd10_code})`].filter(Boolean).join(" ")]);
+        if (enc.differential_diagnosis) rows.push(["A — DD", enc.differential_diagnosis]);
+        if (enc.nursing_diagnosis) rows.push(["A — Dx Keperawatan", enc.nursing_diagnosis]);
+        if (enc.therapy_plan) rows.push(["P — Terapi", enc.therapy_plan]);
+        if (enc.nursing_care) rows.push(["P — KIE/Askep", enc.nursing_care]);
+        if (enc.staff_name) rows.push(["Petugas", enc.staff_name]);
+
+        autoTable(doc, {
+          startY: y,
+          theme: "grid",
+          body: rows.length > 0 ? rows : [["-", "Tidak ada catatan SOAP"]],
+          styles: { fontSize: 8, cellPadding: 2 },
+          columnStyles: { 0: { fontStyle: "bold", cellWidth: 38, textColor: BRAND } },
+          margin: { left: 14, right: 14 },
+        });
+        y = doc.lastAutoTable.finalY + 6;
+      });
+    }
+
+    // Riwayat resep
+    checkPageBreak(25);
+    doc.setFontSize(10);
+    doc.setFont(undefined, "bold");
+    doc.text("Riwayat Resep", 14, y);
+    y += 2;
+    const rxBody = history.prescriptions.length > 0
+      ? history.prescriptions.map((rx) => [
+          new Date(rx.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
+          rx.prescription_number || "-",
+          rx.doctor_name || "-",
+          rx.diagnosis || "-",
+          rx.prescription_items?.length ? `${rx.prescription_items.length} item obat${rx.prescription_items.some((i) => i.compounded) ? " (racikan)" : ""}` : "-",
+        ])
+      : [["Tidak ada data", "", "", "", ""]];
+    autoTable(doc, {
+      startY: y,
+      head: [["Tanggal", "No. Resep", "Dokter", "Diagnosis", "Item Obat"]],
+      body: rxBody,
+      styles: { fontSize: 8.5 },
+      headStyles: { fillColor: BRAND },
+      margin: { left: 14, right: 14 },
+    });
+
+    // Footer cetak
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(7.5);
+      doc.setFont(undefined, "normal");
+      doc.setTextColor(120);
+      doc.text(
+        `Dicetak ${new Date().toLocaleString("id-ID")} · Halaman ${i}/${totalPages}`,
+        pageWidth / 2,
+        pageHeight - 8,
+        { align: "center" }
+      );
+      doc.setTextColor(0);
+    }
+
+    const safeName = (selected.name || "Pasien").replace(/[^a-zA-Z0-9]+/g, "_");
+    doc.save(`RekamMedis_${safeName}_${selected.rm_number || ""}.pdf`);
+  };
+
+  // ── Export Rekam Medis (Excel) ────────────────────────────────────────────
+  const handleExportExcel = () => {
+    if (!selected) return;
+    const wb = XLSX.utils.book_new();
+
+    // Sheet Data Pasien
+    const wsProfil = XLSX.utils.aoa_to_sheet([
+      ["Data Pasien"],
+      [],
+      ["Nama", selected.name || "-"],
+      ["No. RM", selected.rm_number || "-"],
+      ["NIK", selected.nik || "-"],
+      ["No. KK", selected.kk_number || "-"],
+      ["Jenis Kelamin", selected.gender === "L" ? "Laki-laki" : selected.gender === "P" ? "Perempuan" : "-"],
+      ["Tanggal Lahir", selected.birth_date || "-"],
+      ["Umur", selected.birth_date ? `${calcAge(selected.birth_date)} tahun` : "-"],
+      ["No. HP", selected.phone || "-"],
+      ["Alamat", selected.address || "-"],
+      ["Status", selected.status || "-"],
+      ["No. BPJS/SKTM", selected.insurance_number || "-"],
+      ["Agama", selected.religion || "-"],
+      ["Pekerjaan", selected.occupation || "-"],
+      ["Riwayat Penyakit Kronis", selected.chronic_conditions || "-"],
+    ]);
+    XLSX.utils.book_append_sheet(wb, wsProfil, "Data Pasien");
+
+    // Sheet Alergi
+    const wsAlergi = XLSX.utils.aoa_to_sheet([
+      ["Alergen", "Tingkat Keparahan", "Catatan"],
+      ...(allergies.length > 0 ? allergies.map((a) => [a.allergen, a.severity, a.note || "-"]) : [["Tidak ada alergi aktif tercatat.", "", ""]]),
+    ]);
+    XLSX.utils.book_append_sheet(wb, wsAlergi, "Riwayat Alergi");
+
+    // Sheet Kunjungan SOAP
+    const soapHeader = ["Tanggal", "Waktu", "Ruang", "Anamnesis (S)", "Vital Sign (O)", "BB/TB/LP (O)", "Penunjang (O)", "Diagnosis (A)", "DD (A)", "Dx Keperawatan (A)", "Terapi (P)", "KIE/Askep (P)", "Petugas"];
+    const soapRows = history.encounters.map((enc) => [
+      new Date(enc.visit_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
+      [enc.time_start, enc.time_end].filter(Boolean).join("–"),
+      enc.room_destination || "-",
+      enc.anamnesis || "-",
+      [enc.vs_td, enc.vs_rr && `${enc.vs_rr} x/mnt`, enc.vs_nadi && `${enc.vs_nadi} x/mnt`, enc.vs_suhu && `${enc.vs_suhu} °C`].filter(Boolean).join(" · ") || "-",
+      [enc.pf_bb && `${enc.pf_bb} kg`, enc.pf_tb && `${enc.pf_tb} cm`, enc.pf_lp && `${enc.pf_lp} cm`].filter(Boolean).join(" · ") || "-",
+      enc.supporting_exam || "-",
+      [enc.diagnosis, enc.icd10_code && `(${enc.icd10_code})`].filter(Boolean).join(" ") || "-",
+      enc.differential_diagnosis || "-",
+      enc.nursing_diagnosis || "-",
+      enc.therapy_plan || "-",
+      enc.nursing_care || "-",
+      enc.staff_name || "-",
+    ]);
+    const wsSoap = XLSX.utils.aoa_to_sheet([soapHeader, ...(soapRows.length > 0 ? soapRows : [["Belum ada kunjungan tercatat."]])]);
+    XLSX.utils.book_append_sheet(wb, wsSoap, "Riwayat Kunjungan");
+
+    // Sheet Resep
+    const rxHeader = ["Tanggal", "No. Resep", "Dokter", "Diagnosis", "Jumlah Item Obat", "Termasuk Racikan"];
+    const rxRows = history.prescriptions.map((rx) => [
+      new Date(rx.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
+      rx.prescription_number || "-",
+      rx.doctor_name || "-",
+      rx.diagnosis || "-",
+      rx.prescription_items?.length || 0,
+      rx.prescription_items?.some((i) => i.compounded) ? "Ya" : "Tidak",
+    ]);
+    const wsRx = XLSX.utils.aoa_to_sheet([rxHeader, ...(rxRows.length > 0 ? rxRows : [["Belum ada resep tercatat."]])]);
+    XLSX.utils.book_append_sheet(wb, wsRx, "Riwayat Resep");
+
+    const safeName = (selected.name || "Pasien").replace(/[^a-zA-Z0-9]+/g, "_");
+    XLSX.writeFile(wb, `RekamMedis_${safeName}_${selected.rm_number || ""}.xlsx`);
+  };
+
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", paddingBottom: 48 }}>
       <div style={{ marginBottom: 18, display: "flex", alignItems: "flex-end", gap: 12, flexWrap: "wrap" }}>
@@ -313,12 +570,18 @@ export default function PageRekamMedis({ onCreateRecipeFor, doctors, currentUser
                       RM: {selected.rm_number}{selected.nik ? ` · NIK: ${selected.nik}` : ""}
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                  <div style={{ display: "flex", gap: 8, flexShrink: 0, flexWrap: "wrap" }}>
                     {onCreateRecipeFor && (
                       <button className="kk-btn kk-btn-sm kk-btn-primary" onClick={() => onCreateRecipeFor(selected)}>
                         🩺 Buat Resep
                       </button>
                     )}
+                    <button className="kk-btn kk-btn-sm kk-btn-secondary" onClick={handleExportPdf} title="Ekspor rekam medis lengkap ke PDF">
+                      📄 Ekspor PDF
+                    </button>
+                    <button className="kk-btn kk-btn-sm kk-btn-secondary" onClick={handleExportExcel} title="Ekspor rekam medis lengkap ke Excel">
+                      📊 Ekspor Excel
+                    </button>
                     <button className="kk-btn kk-btn-sm kk-btn-secondary" onClick={() => setEditMode((e) => !e)}>
                       {editMode ? "Batal" : "✏️ Ubah"}
                     </button>

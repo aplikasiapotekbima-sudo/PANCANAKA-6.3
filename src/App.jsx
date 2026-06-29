@@ -17,6 +17,7 @@ import PatientSelector from "./components/patients/PatientSelector";
 import { restoreSession, signOut as supabaseSignOut } from "./lib/auth";
 import { logoSm } from "./lib/logoAssets";
 import PageDevPanel from "./pages/dev/PageDevPanel";
+import AutoBackupWatcher from "./components/AutoBackupWatcher";
 
 // ─── STORAGE KEYS ────────────────────────────────────────────────────────────
 const STORAGE_KEYS = {
@@ -81,7 +82,7 @@ const defaultDoctors = [
   { id: "1", name: "Dr. dr. Niken Indrastuti SpKK(K)", active: true, sip: "" },
 ];
 
-const ROLE_LABELS = { dokter: "Dokter", apoteker: "Apoteker", admin: "Admin" };
+const ROLE_LABELS = { dokter: "Dokter", apoteker: "Apoteker", admin: "Admin", manager: "Manager" };
 
 // ─── HOOKS ───────────────────────────────────────────────────────────────────
 function readLocalStorageValue(key, initialValue) {
@@ -251,13 +252,13 @@ function getInvoiceNumber(counter) {
 // ─── UI COMPONENTS ────────────────────────────────────────────────────────────
 function Badge({ color, children }) {
   const colors = {
-    green: { bg: "#EAF3DE", text: "#3B6D11", border: "#C0DD97" },
-    red: { bg: "#FCEBEB", text: "#A32D2D", border: "#F7C1C1" },
-    blue: { bg: "#E6F1FB", text: "#185FA5", border: "#B5D4F4" },
-    amber: { bg: "#FAEEDA", text: "#854F0B", border: "#FAC775" },
-    gray: { bg: "#F1EFE8", text: "#5F5E5A", border: "#D3D1C7" },
-    teal: { bg: "#E1F5EE", text: "#0F6E56", border: "#9FE1CB" },
-    purple: { bg: "#F3EEFF", text: "#6B35B8", border: "#C9A8F5" },
+    green: { bg: "#ddf4e9", text: "#0d7142", border: "#94e0bd" },
+    red: { bg: "#fdeaeb", text: "#a8282f", border: "#f9bfc2" },
+    blue: { bg: "#e5ecfc", text: "#1240ab", border: "#b2c7f7" },
+    amber: { bg: "#fbf1d9", text: "#8a6206", border: "#ffd470" },
+    gray: { bg: "#f1eee8", text: "#5F5E5A", border: "#d3cfc7" },
+    teal: { bg: "#e0f6ec", text: "#0b7242", border: "#9ce4c2" },
+    purple: { bg: "#f6eeff", text: "#7230bd", border: "#cca5f8" },
   };
   const c = colors[color] || colors.gray;
   return (
@@ -383,7 +384,7 @@ function PrintReceipt({ tx, settings, onClose }) {
         )}
       </div>
       <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-        <button onClick={handlePrint} style={{ flex: 1, padding: "10px 0", background: "#185FA5", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500, fontSize: 14 }}>
+        <button onClick={handlePrint} style={{ flex: 1, padding: "10px 0", background: "#1240ab", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500, fontSize: 14 }}>
           🖨️ Cetak
         </button>
         <button onClick={onClose} style={{ flex: 1, padding: "10px 0", background: "var(--color-background-secondary)", color: "var(--color-text-primary)", border: "0.5px solid var(--color-border-secondary)", borderRadius: 8, cursor: "pointer", fontSize: 14 }}>
@@ -465,9 +466,9 @@ function PageCashier({ doctors, setTransactions, invoiceCounter, setInvoiceCount
   };
 
   const methodBtns = [
-    { id: "cash", label: "💵 Tunai", color: "#3B6D11", bg: "#EAF3DE", border: "#9FE1CB" },
-    { id: "transfer", label: "🏦 Transfer", color: "#185FA5", bg: "#E6F1FB", border: "#B5D4F4" },
-    { id: "qris", label: "📱 QRIS", color: "#854F0B", bg: "#FAEEDA", border: "#FAC775" },
+    { id: "cash", label: "💵 Tunai", color: "#0d7142", bg: "#ddf4e9", border: "#9ce4c2" },
+    { id: "transfer", label: "🏦 Transfer", color: "#1240ab", bg: "#e5ecfc", border: "#b2c7f7" },
+    { id: "qris", label: "📱 QRIS", color: "#8a6206", bg: "#fbf1d9", border: "#ffd470" },
   ];
 
   return (
@@ -475,13 +476,13 @@ function PageCashier({ doctors, setTransactions, invoiceCounter, setInvoiceCount
       <h2 style={{ margin: "0 0 24px", fontSize: 20, fontWeight: 500 }}>Transaksi Kasir</h2>
 
       {success && (
-        <div style={{ background: "#EAF3DE", border: "0.5px solid #9FE1CB", borderRadius: 10, padding: "14px 18px", marginBottom: 20, display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ background: "#ddf4e9", border: "0.5px solid #9ce4c2", borderRadius: 10, padding: "14px 18px", marginBottom: 20, display: "flex", alignItems: "center", gap: 12 }}>
           <span style={{ fontSize: 20 }}>✅</span>
           <div>
-            <div style={{ fontWeight: 500, color: "#3B6D11", fontSize: 14 }}>Transaksi berhasil disimpan!</div>
-            <div style={{ color: "#0F6E56", fontSize: 13 }}>Invoice: {success.invoice}</div>
+            <div style={{ fontWeight: 500, color: "#0d7142", fontSize: 14 }}>Transaksi berhasil disimpan!</div>
+            <div style={{ color: "#0b7242", fontSize: 13 }}>Invoice: {success.invoice}</div>
           </div>
-          <button onClick={() => setSuccess(null)} style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: "#3B6D11", fontSize: 18 }}>✕</button>
+          <button onClick={() => setSuccess(null)} style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: "#0d7142", fontSize: 18 }}>✕</button>
         </div>
       )}
 
@@ -493,11 +494,11 @@ function PageCashier({ doctors, setTransactions, invoiceCounter, setInvoiceCount
           <div style={{ display: "grid", gap: 10 }}>
             {activeDoctors.map((d) => (
               <button key={d.id} onClick={() => setSelectedDoc(d.id)} style={{
-                padding: "14px 18px", borderRadius: 10, border: `2px solid ${selectedDoc === d.id ? "#185FA5" : "var(--color-border-tertiary)"}`,
-                background: selectedDoc === d.id ? "#E6F1FB" : "var(--color-background-secondary)",
+                padding: "14px 18px", borderRadius: 10, border: `2px solid ${selectedDoc === d.id ? "#1240ab" : "var(--color-border-tertiary)"}`,
+                background: selectedDoc === d.id ? "#e5ecfc" : "var(--color-background-secondary)",
                 cursor: "pointer", textAlign: "left", transition: "all 0.15s",
               }}>
-                <div style={{ fontWeight: 500, fontSize: 15, color: selectedDoc === d.id ? "#185FA5" : "var(--color-text-primary)" }}>{d.name}</div>
+                <div style={{ fontWeight: 500, fontSize: 15, color: selectedDoc === d.id ? "#1240ab" : "var(--color-text-primary)" }}>{d.name}</div>
                 <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginTop: 2 }}>Dermatologi & Venereologi</div>
               </button>
             ))}
@@ -546,7 +547,7 @@ function PageCashier({ doctors, setTransactions, invoiceCounter, setInvoiceCount
           <div style={{ fontSize: 13, color: "var(--color-text-secondary)", fontWeight: 500 }}>Biaya Obat <span style={{ fontWeight: 400 }}>(opsional)</span></div>
           {pharmacyFeeMode !== "none" && (
             <button onClick={() => { setPharmacyFeeMode("none"); setPharmacyFeeInput(""); }}
-              style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "#A32D2D", padding: 0 }}>
+              style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "#a8282f", padding: 0 }}>
               ✕ Hapus
             </button>
           )}
@@ -571,7 +572,7 @@ function PageCashier({ doctors, setTransactions, invoiceCounter, setInvoiceCount
           </>
         )}
         {pharmacyFeeMode === "nota" && (
-          <div style={{ padding: "10px 14px", borderRadius: 8, background: "#FAEEDA", border: "0.5px solid #FAC775", fontSize: 13, color: "#854F0B", fontStyle: "italic" }}>
+          <div style={{ padding: "10px 14px", borderRadius: 8, background: "#fbf1d9", border: "0.5px solid #ffd470", fontSize: 13, color: "#8a6206", fontStyle: "italic" }}>
             📋 Tertera pada nota apotek — tidak dihitung ke total pembayaran
           </div>
         )}
@@ -608,7 +609,7 @@ function PageCashier({ doctors, setTransactions, invoiceCounter, setInvoiceCount
           {pharmacyFeeMode === "nota" && (
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: 10, marginBottom: 10, borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
               <span style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>Biaya Obat</span>
-              <span style={{ fontSize: 13, color: "#854F0B", fontStyle: "italic" }}>Tertera pada nota apotek</span>
+              <span style={{ fontSize: 13, color: "#8a6206", fontStyle: "italic" }}>Tertera pada nota apotek</span>
             </div>
           )}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, paddingBottom: 16, borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
@@ -624,8 +625,8 @@ function PageCashier({ doctors, setTransactions, invoiceCounter, setInvoiceCount
               style={{ width: "100%", padding: "12px 14px 12px 38px", borderRadius: 8, border: "0.5px solid var(--color-border-secondary)", background: "var(--color-background-secondary)", color: "var(--color-text-primary)", fontSize: 18, fontWeight: 600, boxSizing: "border-box" }} />
           </div>
           {method === "cash" && paid && (
-            <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 8, background: change >= 0 ? "#EAF3DE" : "#FCEBEB", border: `0.5px solid ${change >= 0 ? "#9FE1CB" : "#F7C1C1"}` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", color: change >= 0 ? "#3B6D11" : "#A32D2D", fontWeight: 600 }}>
+            <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 8, background: change >= 0 ? "#ddf4e9" : "#fdeaeb", border: `0.5px solid ${change >= 0 ? "#9ce4c2" : "#f9bfc2"}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", color: change >= 0 ? "#0d7142" : "#a8282f", fontWeight: 600 }}>
                 <span>{change >= 0 ? "Kembalian" : "Kurang"}</span>
                 <span>{formatRupiah(Math.abs(change))}</span>
               </div>
@@ -644,14 +645,14 @@ function PageCashier({ doctors, setTransactions, invoiceCounter, setInvoiceCount
       )}
 
       {error && (
-        <div style={{ background: "#FCEBEB", border: "0.5px solid #F7C1C1", borderRadius: 8, padding: "10px 14px", marginBottom: 16, color: "#A32D2D", fontSize: 13 }}>
+        <div style={{ background: "#fdeaeb", border: "0.5px solid #f9bfc2", borderRadius: 8, padding: "10px 14px", marginBottom: 16, color: "#a8282f", fontSize: 13 }}>
           ⚠️ {error}
         </div>
       )}
 
       <button onClick={handleSubmit} disabled={!selectedDoc} style={{
         width: "100%", padding: "16px", borderRadius: 12, border: "none",
-        background: selectedDoc ? "#185FA5" : "var(--color-background-secondary)",
+        background: selectedDoc ? "#1240ab" : "var(--color-background-secondary)",
         color: selectedDoc ? "#fff" : "var(--color-text-secondary)",
         fontSize: 16, fontWeight: 600, cursor: selectedDoc ? "pointer" : "not-allowed", transition: "all 0.15s",
       }}>
@@ -754,9 +755,9 @@ function PageHistory({ transactions, setTransactions, doctors, settings }) {
   const editChange = editForm.method === "cash" ? editPaidNum - editFeeNum : 0;
 
   const methodBtns = [
-    { id: "cash", label: "💵 Tunai", color: "#3B6D11", bg: "#EAF3DE", border: "#9FE1CB" },
-    { id: "transfer", label: "🏦 Transfer", color: "#185FA5", bg: "#E6F1FB", border: "#B5D4F4" },
-    { id: "qris", label: "📱 QRIS", color: "#854F0B", bg: "#FAEEDA", border: "#FAC775" },
+    { id: "cash", label: "💵 Tunai", color: "#0d7142", bg: "#ddf4e9", border: "#9ce4c2" },
+    { id: "transfer", label: "🏦 Transfer", color: "#1240ab", bg: "#e5ecfc", border: "#b2c7f7" },
+    { id: "qris", label: "📱 QRIS", color: "#8a6206", bg: "#fbf1d9", border: "#ffd470" },
   ];
 
   return (
@@ -774,7 +775,7 @@ function PageHistory({ transactions, setTransactions, doctors, settings }) {
           {doctors.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
         </select>
         <button onClick={() => handleExportExcel(filtered)} disabled={filtered.length === 0}
-          style={{ flex: "0 0 auto", display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 8, border: "none", background: filtered.length > 0 ? "#185FA5" : "var(--color-background-secondary)", color: filtered.length > 0 ? "#fff" : "var(--color-text-secondary)", cursor: filtered.length > 0 ? "pointer" : "not-allowed", fontWeight: 500, fontSize: 14, whiteSpace: "nowrap" }}>
+          style={{ flex: "0 0 auto", display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 8, border: "none", background: filtered.length > 0 ? "#1240ab" : "var(--color-background-secondary)", color: filtered.length > 0 ? "#fff" : "var(--color-text-secondary)", cursor: filtered.length > 0 ? "pointer" : "not-allowed", fontWeight: 500, fontSize: 14, whiteSpace: "nowrap" }}>
           📥 Export Excel
         </button>
       </div>
@@ -782,7 +783,7 @@ function PageHistory({ transactions, setTransactions, doctors, settings }) {
       <div style={{ fontSize: 13, color: "var(--color-text-secondary)", marginBottom: 12 }}>
         Menampilkan {filtered.length} transaksi
         {(search || filterDate || filterDoctor) && (
-          <button onClick={() => { setSearch(""); setFilterDate(""); setFilterDoctor(""); }} style={{ marginLeft: 10, background: "none", border: "none", cursor: "pointer", color: "#A32D2D", fontSize: 12 }}>
+          <button onClick={() => { setSearch(""); setFilterDate(""); setFilterDoctor(""); }} style={{ marginLeft: 10, background: "none", border: "none", cursor: "pointer", color: "#a8282f", fontSize: 12 }}>
             ✕ Reset filter
           </button>
         )}
@@ -797,7 +798,7 @@ function PageHistory({ transactions, setTransactions, doctors, settings }) {
               <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-                    <span style={{ fontWeight: 600, fontSize: 14, color: "#185FA5" }}>{tx.invoice}</span>
+                    <span style={{ fontWeight: 600, fontSize: 14, color: "#1240ab" }}>{tx.invoice}</span>
                     <Badge color={payColor[tx.method]}>{payLabel[tx.method]}</Badge>
                   </div>
                   <div style={{ fontSize: 14, color: "var(--color-text-primary)", marginBottom: 2 }}>{tx.doctorName}</div>
@@ -811,8 +812,8 @@ function PageHistory({ transactions, setTransactions, doctors, settings }) {
                   )}
                   <div style={{ display: "flex", gap: 6, marginTop: 8, justifyContent: "flex-end" }}>
                     <button onClick={() => setPrintTx(tx)} style={{ padding: "5px 10px", borderRadius: 6, border: "0.5px solid var(--color-border-secondary)", background: "var(--color-background-secondary)", cursor: "pointer", fontSize: 12, color: "var(--color-text-secondary)" }}>🖨️</button>
-                    <button onClick={() => openEdit(tx)} style={{ padding: "5px 10px", borderRadius: 6, border: "0.5px solid #B5D4F4", background: "#E6F1FB", cursor: "pointer", fontSize: 12, color: "#185FA5" }}>✏️ Edit</button>
-                    <button onClick={() => setDeleteConfirm(tx)} style={{ padding: "5px 10px", borderRadius: 6, border: "0.5px solid #F7C1C1", background: "#FCEBEB", cursor: "pointer", fontSize: 12, color: "#A32D2D" }}>🗑️ Hapus</button>
+                    <button onClick={() => openEdit(tx)} style={{ padding: "5px 10px", borderRadius: 6, border: "0.5px solid #b2c7f7", background: "#e5ecfc", cursor: "pointer", fontSize: 12, color: "#1240ab" }}>✏️ Edit</button>
+                    <button onClick={() => setDeleteConfirm(tx)} style={{ padding: "5px 10px", borderRadius: 6, border: "0.5px solid #f9bfc2", background: "#fdeaeb", cursor: "pointer", fontSize: 12, color: "#a8282f" }}>🗑️ Hapus</button>
                   </div>
                 </div>
               </div>
@@ -827,7 +828,7 @@ function PageHistory({ transactions, setTransactions, doctors, settings }) {
         {editTx && (
           <>
             <div style={{ background: "var(--color-background-secondary)", borderRadius: 8, padding: "10px 14px", marginBottom: 20, fontSize: 13, color: "var(--color-text-secondary)" }}>
-              <span style={{ fontWeight: 600, color: "#185FA5" }}>{editTx.invoice}</span> · {editTx.doctorName}
+              <span style={{ fontWeight: 600, color: "#1240ab" }}>{editTx.invoice}</span> · {editTx.doctorName}
             </div>
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: "block", fontSize: 13, color: "var(--color-text-secondary)", fontWeight: 500, marginBottom: 6 }}>Nama Pasien</label>
@@ -858,7 +859,7 @@ function PageHistory({ transactions, setTransactions, doctors, settings }) {
                 <label style={{ fontSize: 13, color: "var(--color-text-secondary)", fontWeight: 500 }}>Biaya Obat <span style={{ fontWeight: 400 }}>(opsional)</span></label>
                 {editForm.pharmacyFeeMode !== "none" && (
                   <button onClick={() => setEditForm({ ...editForm, pharmacyFeeMode: "none", pharmacyFeeInput: "" })}
-                    style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "#A32D2D", padding: 0 }}>
+                    style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "#a8282f", padding: 0 }}>
                     ✕ Hapus
                   </button>
                 )}
@@ -881,7 +882,7 @@ function PageHistory({ transactions, setTransactions, doctors, settings }) {
                 </div>
               )}
               {editForm.pharmacyFeeMode === "nota" && (
-                <div style={{ padding: "8px 12px", borderRadius: 8, background: "#FAEEDA", border: "0.5px solid #FAC775", fontSize: 12, color: "#854F0B", fontStyle: "italic" }}>
+                <div style={{ padding: "8px 12px", borderRadius: 8, background: "#fbf1d9", border: "0.5px solid #ffd470", fontSize: 12, color: "#8a6206", fontStyle: "italic" }}>
                   📋 Tertera pada nota apotek
                 </div>
               )}
@@ -895,8 +896,8 @@ function PageHistory({ transactions, setTransactions, doctors, settings }) {
                     style={{ width: "100%", padding: "10px 14px 10px 38px", borderRadius: 8, border: "0.5px solid var(--color-border-secondary)", background: "var(--color-background-secondary)", color: "var(--color-text-primary)", fontSize: 16, fontWeight: 600, boxSizing: "border-box" }} />
                 </div>
                 {editForm.paid && editFeeNum > 0 && (
-                  <div style={{ marginTop: 8, padding: "8px 12px", borderRadius: 8, background: editChange >= 0 ? "#EAF3DE" : "#FCEBEB", border: `0.5px solid ${editChange >= 0 ? "#9FE1CB" : "#F7C1C1"}` }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", color: editChange >= 0 ? "#3B6D11" : "#A32D2D", fontWeight: 600, fontSize: 13 }}>
+                  <div style={{ marginTop: 8, padding: "8px 12px", borderRadius: 8, background: editChange >= 0 ? "#ddf4e9" : "#fdeaeb", border: `0.5px solid ${editChange >= 0 ? "#9ce4c2" : "#f9bfc2"}` }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", color: editChange >= 0 ? "#0d7142" : "#a8282f", fontWeight: 600, fontSize: 13 }}>
                       <span>{editChange >= 0 ? "Kembalian" : "Kurang"}</span>
                       <span>{formatRupiah(Math.abs(editChange))}</span>
                     </div>
@@ -905,7 +906,7 @@ function PageHistory({ transactions, setTransactions, doctors, settings }) {
               </div>
             )}
             <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
-              <button onClick={handleEditSave} disabled={editFeeNum === 0} style={{ flex: 1, padding: "10px 0", background: editFeeNum > 0 ? "#185FA5" : "var(--color-background-secondary)", color: editFeeNum > 0 ? "#fff" : "var(--color-text-secondary)", border: "none", borderRadius: 8, cursor: editFeeNum > 0 ? "pointer" : "not-allowed", fontWeight: 500, fontSize: 14 }}>
+              <button onClick={handleEditSave} disabled={editFeeNum === 0} style={{ flex: 1, padding: "10px 0", background: editFeeNum > 0 ? "#1240ab" : "var(--color-background-secondary)", color: editFeeNum > 0 ? "#fff" : "var(--color-text-secondary)", border: "none", borderRadius: 8, cursor: editFeeNum > 0 ? "pointer" : "not-allowed", fontWeight: 500, fontSize: 14 }}>
                 💾 Simpan Perubahan
               </button>
               <button onClick={() => setEditTx(null)} style={{ flex: 1, padding: "10px 0", background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-secondary)", borderRadius: 8, cursor: "pointer", fontSize: 14 }}>
@@ -922,16 +923,16 @@ function PageHistory({ transactions, setTransactions, doctors, settings }) {
             <div style={{ textAlign: "center", padding: "8px 0 20px" }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🗑️</div>
               <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 8 }}>Yakin ingin menghapus transaksi ini?</div>
-              <div style={{ fontSize: 13, color: "var(--color-text-secondary)", marginBottom: 4 }}>Invoice: <strong style={{ color: "#185FA5" }}>{deleteConfirm.invoice}</strong></div>
+              <div style={{ fontSize: 13, color: "var(--color-text-secondary)", marginBottom: 4 }}>Invoice: <strong style={{ color: "#1240ab" }}>{deleteConfirm.invoice}</strong></div>
               <div style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>{deleteConfirm.doctorName}</div>
               {deleteConfirm.patientName && <div style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>Pasien: {deleteConfirm.patientName}</div>}
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#A32D2D", marginTop: 8 }}>{formatRupiah(deleteConfirm.fee)}</div>
-              <div style={{ marginTop: 8, fontSize: 12, color: "#A32D2D", background: "#FCEBEB", border: "0.5px solid #F7C1C1", borderRadius: 8, padding: "8px 12px" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#a8282f", marginTop: 8 }}>{formatRupiah(deleteConfirm.fee)}</div>
+              <div style={{ marginTop: 8, fontSize: 12, color: "#a8282f", background: "#fdeaeb", border: "0.5px solid #f9bfc2", borderRadius: 8, padding: "8px 12px" }}>
                 ⚠️ Tindakan ini tidak dapat dibatalkan.
               </div>
             </div>
             <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => handleDelete(deleteConfirm.id)} style={{ flex: 1, padding: "10px 0", background: "#A32D2D", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500, fontSize: 14 }}>Ya, Hapus</button>
+              <button onClick={() => handleDelete(deleteConfirm.id)} style={{ flex: 1, padding: "10px 0", background: "#a8282f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500, fontSize: 14 }}>Ya, Hapus</button>
               <button onClick={() => setDeleteConfirm(null)} style={{ flex: 1, padding: "10px 0", background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-secondary)", borderRadius: 8, cursor: "pointer", fontSize: 14 }}>Batal</button>
             </div>
           </>
@@ -967,7 +968,7 @@ function PageDoctors({ doctors, setDoctors }) {
     <div style={{ maxWidth: 640, margin: "0 auto", paddingBottom: 40 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <h2 style={{ margin: 0, fontSize: 20, fontWeight: 500 }}>Master Dokter</h2>
-        <button onClick={openAdd} style={{ padding: "9px 18px", borderRadius: 8, border: "none", background: "#185FA5", color: "#fff", cursor: "pointer", fontWeight: 500, fontSize: 14 }}>
+        <button onClick={openAdd} style={{ padding: "9px 18px", borderRadius: 8, border: "none", background: "#1240ab", color: "#fff", cursor: "pointer", fontWeight: 500, fontSize: 14 }}>
           + Tambah Dokter
         </button>
       </div>
@@ -975,7 +976,7 @@ function PageDoctors({ doctors, setDoctors }) {
       <div style={{ display: "grid", gap: 10 }}>
         {doctors.map((d) => (
           <div key={d.id} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 10, padding: "14px 18px", display: "flex", alignItems: "center", gap: 14, opacity: d.active ? 1 : 0.6 }}>
-            <div style={{ width: 40, height: 40, borderRadius: "50%", background: d.active ? "#E6F1FB" : "#F1EFE8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>👨‍⚕️</div>
+            <div style={{ width: 40, height: 40, borderRadius: "50%", background: d.active ? "#e5ecfc" : "#f1eee8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>👨‍⚕️</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 500, fontSize: 15 }}>{d.name}</div>
               {d.sip && <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginTop: 1 }}>SIP: {d.sip}</div>}
@@ -1006,7 +1007,7 @@ function PageDoctors({ doctors, setDoctors }) {
           </label>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={handleSave} style={{ flex: 1, padding: "10px 0", background: "#185FA5", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500 }}>Simpan</button>
+          <button onClick={handleSave} style={{ flex: 1, padding: "10px 0", background: "#1240ab", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500 }}>Simpan</button>
           <button onClick={() => setModal(false)} style={{ flex: 1, padding: "10px 0", background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-secondary)", borderRadius: 8, cursor: "pointer" }}>Batal</button>
         </div>
       </Modal>
@@ -1032,7 +1033,7 @@ function PageSettings({ settings, setSettings }) {
   return (
     <div style={{ maxWidth: 560, margin: "0 auto", paddingBottom: 40 }}>
       <h2 style={{ margin: "0 0 24px", fontSize: 20, fontWeight: 500 }}>Pengaturan Kop Nota</h2>
-      {saved && (<div style={{ background: "#EAF3DE", border: "0.5px solid #9FE1CB", borderRadius: 8, padding: "10px 16px", marginBottom: 16, color: "#3B6D11", fontSize: 14 }}>✅ Pengaturan berhasil disimpan!</div>)}
+      {saved && (<div style={{ background: "#ddf4e9", border: "0.5px solid #9ce4c2", borderRadius: 8, padding: "10px 16px", marginBottom: 16, color: "#0d7142", fontSize: 14 }}>✅ Pengaturan berhasil disimpan!</div>)}
       <div style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 12, padding: 24 }}>
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 13, color: "var(--color-text-secondary)", fontWeight: 500, marginBottom: 10 }}>Logo Klinik</div>
@@ -1042,7 +1043,7 @@ function PageSettings({ settings, setSettings }) {
               📁 Upload Logo
               <input type="file" accept="image/*" onChange={handleLogo} style={{ display: "none" }} />
             </label>
-            {form.logo && (<button onClick={() => setForm({ ...form, logo: "" })} style={{ padding: "8px 16px", borderRadius: 8, border: "0.5px solid var(--color-border-secondary)", background: "var(--color-background-secondary)", cursor: "pointer", fontSize: 13, color: "#A32D2D" }}>Hapus Logo</button>)}
+            {form.logo && (<button onClick={() => setForm({ ...form, logo: "" })} style={{ padding: "8px 16px", borderRadius: 8, border: "0.5px solid var(--color-border-secondary)", background: "var(--color-background-secondary)", cursor: "pointer", fontSize: 13, color: "#a8282f" }}>Hapus Logo</button>)}
           </div>
         </div>
         <div style={{ marginBottom: 16 }}>
@@ -1061,7 +1062,7 @@ function PageSettings({ settings, setSettings }) {
           <label style={{ display: "block", fontSize: 13, color: "var(--color-text-secondary)", fontWeight: 500, marginBottom: 6 }}>Catatan / Footer Nota</label>
           <textarea value={form.footer} onChange={(e) => setForm({ ...form, footer: e.target.value })} rows={2} style={{ width: "100%", padding: "10px 14px", borderRadius: 8, border: "0.5px solid var(--color-border-secondary)", background: "var(--color-background-secondary)", color: "var(--color-text-primary)", fontSize: 14, resize: "vertical", boxSizing: "border-box" }} />
         </div>
-        <button onClick={handleSave} style={{ width: "100%", padding: "12px 0", background: "#185FA5", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500, fontSize: 15 }}>💾 Simpan Pengaturan</button>
+        <button onClick={handleSave} style={{ width: "100%", padding: "12px 0", background: "#1240ab", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500, fontSize: 15 }}>💾 Simpan Pengaturan</button>
       </div>
       <div style={{ marginTop: 24, background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 10, padding: 16 }}>
         <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 10, color: "var(--color-text-secondary)" }}>Preview Kop Nota</div>
@@ -1095,7 +1096,7 @@ function PageReports({ transactions, doctors, cashCounts, setCashCounts, setting
         ].map((t) => (
           <button key={t.id} onClick={() => setReportTab(t.id)} style={{
             flex: 1, padding: "11px 8px", border: "none", cursor: "pointer",
-            background: reportTab === t.id ? "#185FA5" : "transparent",
+            background: reportTab === t.id ? "#1240ab" : "transparent",
             color: reportTab === t.id ? "#fff" : "var(--color-text-secondary)",
             fontSize: 12.5, fontWeight: reportTab === t.id ? 600 : 400,
             fontFamily: "var(--font)", borderRight: "0.5px solid var(--color-border-tertiary)",
@@ -1192,7 +1193,7 @@ function ReportResep({ transactions, doctors, settings }) {
   });
   const methodLabel = { cash: "Tunai", transfer: "Transfer", qris: "QRIS" };
   const methodColor = { cash: "green", transfer: "blue", qris: "amber" };
-  const methodAccent = { cash: "#16a34a", transfer: "#185FA5", qris: "#d97706" };
+  const methodAccent = { cash: "#10a962", transfer: "#1240ab", qris: "#df9c00" };
   const methodBg = { cash: "rgba(22,163,74,0.07)", transfer: "rgba(24,95,165,0.07)", qris: "rgba(217,119,6,0.07)" };
 
   // ── Rekap Harian ──────────────────────────────────────────────────────────
@@ -1410,7 +1411,7 @@ function ReportResep({ transactions, doctors, settings }) {
             { id: "interval", label: "Interval" },
           ].map((m) => (
             <button key={m.id} onClick={() => { setMode(m.id); setIntervalApplied(false); setIntervalError(""); }}
-              style={{ padding: "8px 18px", border: "none", background: mode === m.id ? "#185FA5" : "var(--color-background-secondary)", color: mode === m.id ? "#fff" : "var(--color-text-secondary)", cursor: "pointer", fontSize: 14, fontWeight: mode === m.id ? 500 : 400, fontFamily: "var(--font)" }}>
+              style={{ padding: "8px 18px", border: "none", background: mode === m.id ? "#1240ab" : "var(--color-background-secondary)", color: mode === m.id ? "#fff" : "var(--color-text-secondary)", cursor: "pointer", fontSize: 14, fontWeight: mode === m.id ? 500 : 400, fontFamily: "var(--font)" }}>
               {m.label}
             </button>
           ))}
@@ -1434,12 +1435,12 @@ function ReportResep({ transactions, doctors, settings }) {
                 <input type="date" value={intervalEnd} onChange={(e) => { setIntervalEnd(e.target.value); setIntervalApplied(false); }} style={inputStyle} />
               </div>
               <button onClick={handleTampilkanInterval}
-                style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#185FA5", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 500, fontFamily: "var(--font)" }}>
+                style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#1240ab", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 500, fontFamily: "var(--font)" }}>
                 🔍 Tampilkan
               </button>
             </div>
             {intervalError && (
-              <div style={{ fontSize: 12, color: "#A32D2D", background: "#FCEBEB", border: "0.5px solid #F7C1C1", borderRadius: 6, padding: "6px 10px" }}>
+              <div style={{ fontSize: 12, color: "#a8282f", background: "#fdeaeb", border: "0.5px solid #f9bfc2", borderRadius: 6, padding: "6px 10px" }}>
                 ⚠️ {intervalError}
               </div>
             )}
@@ -1450,11 +1451,11 @@ function ReportResep({ transactions, doctors, settings }) {
       {/* ── Export buttons (always visible) ── */}
       <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
         <button onClick={handleExportExcel}
-          style={{ padding: "8px 16px", borderRadius: 8, border: "0.5px solid #16a34a", background: "#EAF3DE", color: "#3B6D11", cursor: "pointer", fontSize: 13, fontWeight: 500, fontFamily: "var(--font)" }}>
+          style={{ padding: "8px 16px", borderRadius: 8, border: "0.5px solid #10a962", background: "#ddf4e9", color: "#0d7142", cursor: "pointer", fontSize: 13, fontWeight: 500, fontFamily: "var(--font)" }}>
           📊 Export Excel
         </button>
         <button onClick={handleExportPdf}
-          style={{ padding: "8px 16px", borderRadius: 8, border: "0.5px solid #185FA5", background: "#E6F1FB", color: "#185FA5", cursor: "pointer", fontSize: 13, fontWeight: 500, fontFamily: "var(--font)" }}>
+          style={{ padding: "8px 16px", borderRadius: 8, border: "0.5px solid #1240ab", background: "#e5ecfc", color: "#1240ab", cursor: "pointer", fontSize: 13, fontWeight: 500, fontFamily: "var(--font)" }}>
           📄 Export PDF
         </button>
       </div>
@@ -1496,13 +1497,13 @@ function ReportResep({ transactions, doctors, settings }) {
             </div>
             <div style={{ background: "var(--color-background-secondary)", borderRadius: 8, padding: "14px 16px" }}>
               <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 6 }}>Biaya Obat</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: totalObat > 0 ? "#185FA5" : "var(--color-text-primary)" }}>{formatRupiah(totalObat)}</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: totalObat > 0 ? "#1240ab" : "var(--color-text-primary)" }}>{formatRupiah(totalObat)}</div>
               <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginTop: 4 }}>{txDenganObat.length} transaksi ada obat</div>
             </div>
           </div>
           <div style={{ background: "var(--color-background-secondary)", borderRadius: 8, padding: "14px 16px", marginBottom: 24 }}>
             <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 6 }}>Rata-rata Harian Penghasilan Dokter</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#185FA5" }}>{formatRupiah(Math.round(rataHarianDokter))}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#1240ab" }}>{formatRupiah(Math.round(rataHarianDokter))}</div>
             <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginTop: 4 }}>Total Konsultasi ÷ {jumlahHari} hari</div>
           </div>
 
@@ -1543,7 +1544,7 @@ function ReportResep({ transactions, doctors, settings }) {
                 <div style={{ display: "grid", gridTemplateColumns: "100px 1fr 1fr 1fr", gap: 0, marginBottom: 6 }}>
                   <div></div>
                   {["Tunai", "Transfer", "QRIS"].map((label, i) => {
-                    const colors = ["#16a34a", "#185FA5", "#d97706"];
+                    const colors = ["#10a962", "#1240ab", "#df9c00"];
                     return (
                       <div key={label} style={{ textAlign: "center", paddingBottom: 8 }}>
                         <Badge color={["green","blue","amber"][i]}>{label}</Badge>
@@ -1554,7 +1555,7 @@ function ReportResep({ transactions, doctors, settings }) {
 
                 {/* Baris Omset Konsultasi */}
                 <div style={{ display: "grid", gridTemplateColumns: "100px 1fr 1fr 1fr", gap: 0, background: "rgba(24,95,165,0.05)", borderRadius: 8, padding: "10px 8px", marginBottom: 6, alignItems: "center" }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: "#185FA5" }}>🩺 Konsultasi</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#1240ab" }}>🩺 Konsultasi</div>
                   {byMethod.map((m) => (
                     <div key={m.method} style={{ textAlign: "center" }}>
                       <div style={{ fontSize: 14, fontWeight: 700, color: m.totalKonsultasi > 0 ? methodAccent[m.method] : "var(--color-text-secondary)" }}>
@@ -1569,7 +1570,7 @@ function ReportResep({ transactions, doctors, settings }) {
 
                 {/* Baris Omset Obat */}
                 <div style={{ display: "grid", gridTemplateColumns: "100px 1fr 1fr 1fr", gap: 0, background: "rgba(124,58,237,0.05)", borderRadius: 8, padding: "10px 8px", marginBottom: 6, alignItems: "center" }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: "#7c3aed" }}>💊 Obat</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#8d33f4" }}>💊 Obat</div>
                   {byMethod.map((m) => (
                     <div key={m.method} style={{ textAlign: "center" }}>
                       <div style={{ fontSize: 14, fontWeight: 700, color: m.totalObat > 0 ? methodAccent[m.method] : "var(--color-text-secondary)" }}>
@@ -1614,10 +1615,10 @@ function ReportResep({ transactions, doctors, settings }) {
                         return (
                           <tr key={tx.id || i} style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
                             <td style={{ padding: "8px 10px", whiteSpace: "nowrap", fontSize: 12, color: "var(--color-text-secondary)" }}>{tx.date.slice(0, 10)}</td>
-                            <td style={{ padding: "8px 10px", whiteSpace: "nowrap", fontWeight: 500, color: "#185FA5" }}>{tx.invoice || "-"}</td>
+                            <td style={{ padding: "8px 10px", whiteSpace: "nowrap", fontWeight: 500, color: "#1240ab" }}>{tx.invoice || "-"}</td>
                             <td style={{ padding: "8px 10px" }}>{tx.patientName || "-"}</td>
                             <td style={{ padding: "8px 10px", textAlign: "right", whiteSpace: "nowrap" }}>{formatRupiah(tx.fee)}</td>
-                            <td style={{ padding: "8px 10px", textAlign: "right", whiteSpace: "nowrap", color: obat > 0 ? "#185FA5" : "var(--color-text-secondary)" }}>{obat > 0 ? formatRupiah(obat) : "-"}</td>
+                            <td style={{ padding: "8px 10px", textAlign: "right", whiteSpace: "nowrap", color: obat > 0 ? "#1240ab" : "var(--color-text-secondary)" }}>{obat > 0 ? formatRupiah(obat) : "-"}</td>
                             <td style={{ padding: "8px 10px", textAlign: "right", whiteSpace: "nowrap", fontWeight: 600 }}>{formatRupiah(total)}</td>
                           </tr>
                         );
@@ -1645,7 +1646,7 @@ function ReportResep({ transactions, doctors, settings }) {
                           <td style={{ padding: "8px 10px", whiteSpace: "nowrap", fontWeight: 500 }}>{r.tanggal}</td>
                           <td style={{ padding: "8px 10px", textAlign: "right" }}>{r.count}</td>
                           <td style={{ padding: "8px 10px", textAlign: "right", whiteSpace: "nowrap" }}>{formatRupiah(r.konsultasi)}</td>
-                          <td style={{ padding: "8px 10px", textAlign: "right", whiteSpace: "nowrap", color: r.obat > 0 ? "#185FA5" : "var(--color-text-secondary)" }}>{formatRupiah(r.obat)}</td>
+                          <td style={{ padding: "8px 10px", textAlign: "right", whiteSpace: "nowrap", color: r.obat > 0 ? "#1240ab" : "var(--color-text-secondary)" }}>{formatRupiah(r.obat)}</td>
                           <td style={{ padding: "8px 10px", textAlign: "right", whiteSpace: "nowrap", fontWeight: 600 }}>{formatRupiah(r.konsultasi + r.obat)}</td>
                         </tr>
                       ))}
@@ -1725,7 +1726,7 @@ const S = {
     padding: "9px 18px",
     borderRadius: 8,
     border: primary ? "none" : "0.5px solid var(--color-border-secondary)",
-    background: primary ? "#185FA5" : "var(--color-background-secondary)",
+    background: primary ? "#1240ab" : "var(--color-background-secondary)",
     color: primary ? "#fff" : "var(--color-text-secondary)",
     cursor: "pointer",
     fontWeight: 500,
@@ -1735,18 +1736,18 @@ const S = {
   dangerBtn: {
     padding: "5px 10px",
     borderRadius: 6,
-    border: "0.5px solid #F7C1C1",
-    background: "#FCEBEB",
+    border: "0.5px solid #f9bfc2",
+    background: "#fdeaeb",
     cursor: "pointer",
     fontSize: 12,
-    color: "#A32D2D",
+    color: "#a8282f",
   },
 };
 
 const METHOD_BTNS = [
-  { id: "cash",     label: "💵 Tunai",    color: "#3B6D11", bg: "#EAF3DE", border: "#9FE1CB" },
-  { id: "transfer", label: "🏦 Transfer",  color: "#185FA5", bg: "#E6F1FB", border: "#B5D4F4" },
-  { id: "qris",     label: "📱 QRIS",      color: "#854F0B", bg: "#FAEEDA", border: "#FAC775" },
+  { id: "cash",     label: "💵 Tunai",    color: "#0d7142", bg: "#ddf4e9", border: "#9ce4c2" },
+  { id: "transfer", label: "🏦 Transfer",  color: "#1240ab", bg: "#e5ecfc", border: "#b2c7f7" },
+  { id: "qris",     label: "📱 QRIS",      color: "#8a6206", bg: "#fbf1d9", border: "#ffd470" },
 ];
 const METHOD_LABEL = { cash: "Tunai", transfer: "Transfer", qris: "QRIS" };
 const METHOD_COLOR = { cash: "green", transfer: "blue", qris: "amber" };
@@ -1958,9 +1959,9 @@ function ReportNonResep({ otcSales, setOtcSales, otcCounter, setOtcCounter }) {
 
       {/* ── Top summary strip ── */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
-        <SummaryCard label="Omset Hari Ini" value={formatRupiah(todayOmset)} sub={`${sales.filter(s => s.date === todayStr).length} transaksi`} color="#185FA5" />
+        <SummaryCard label="Omset Hari Ini" value={formatRupiah(todayOmset)} sub={`${sales.filter(s => s.date === todayStr).length} transaksi`} color="#1240ab" />
         <SummaryCard label="Total Transaksi" value={sales.length} sub="semua waktu" />
-        <SummaryCard label="Omset Keseluruhan" value={formatRupiah(totalOmset)} sub={filterDate || filterMonth ? "filter aktif" : "semua waktu"} color="#3B6D11" />
+        <SummaryCard label="Omset Keseluruhan" value={formatRupiah(totalOmset)} sub={filterDate || filterMonth ? "filter aktif" : "semua waktu"} color="#0d7142" />
       </div>
 
       {/* ── Sub nav ── */}
@@ -2013,7 +2014,7 @@ function ReportNonResep({ otcSales, setOtcSales, otcCounter, setOtcCounter }) {
             {(search || filterDate || filterMonth || filterMethod) && (
               <button
                 onClick={() => { setSearch(""); setFilterDate(""); setFilterMonth(""); setFilterMethod(""); }}
-                style={{ ...S.btn(false), padding: "8px 12px", fontSize: 12, color: "#A32D2D", border: "0.5px solid #F7C1C1", background: "#FCEBEB" }}
+                style={{ ...S.btn(false), padding: "8px 12px", fontSize: 12, color: "#a8282f", border: "0.5px solid #f9bfc2", background: "#fdeaeb" }}
               >
                 ✕ Reset
               </button>
@@ -2026,7 +2027,7 @@ function ReportNonResep({ otcSales, setOtcSales, otcCounter, setOtcCounter }) {
           </div>
 
           {saved && (
-            <div style={{ background: "#EAF3DE", border: "0.5px solid #9FE1CB", borderRadius: 8, padding: "10px 14px", marginBottom: 12, color: "#3B6D11", fontSize: 13, fontWeight: 500 }}>
+            <div style={{ background: "#ddf4e9", border: "0.5px solid #9ce4c2", borderRadius: 8, padding: "10px 14px", marginBottom: 12, color: "#0d7142", fontSize: 13, fontWeight: 500 }}>
               ✅ Penjualan berhasil disimpan.
             </div>
           )}
@@ -2087,17 +2088,17 @@ function ReportNonResep({ otcSales, setOtcSales, otcCounter, setOtcCounter }) {
               <div style={{ fontSize: 36, marginBottom: 10 }}>🗑️</div>
               <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 8 }}>Yakin hapus penjualan ini?</div>
               <div style={{ fontSize: 13, color: "var(--color-text-secondary)", marginBottom: 4 }}>
-                No. <strong style={{ color: "#185FA5" }}>{deleteConfirm.noSale}</strong>
+                No. <strong style={{ color: "#1240ab" }}>{deleteConfirm.noSale}</strong>
               </div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#A32D2D", margin: "6px 0" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#a8282f", margin: "6px 0" }}>
                 {formatRupiah(deleteConfirm.subtotal)}
               </div>
-              <div style={{ fontSize: 12, color: "#A32D2D", background: "#FCEBEB", border: "0.5px solid #F7C1C1", borderRadius: 8, padding: "8px 12px" }}>
+              <div style={{ fontSize: 12, color: "#a8282f", background: "#fdeaeb", border: "0.5px solid #f9bfc2", borderRadius: 8, padding: "8px 12px" }}>
                 ⚠️ Tindakan ini tidak dapat dibatalkan.
               </div>
             </div>
             <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => handleDelete(deleteConfirm.id)} style={{ flex: 1, padding: "10px 0", background: "#A32D2D", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500, fontSize: 14 }}>Ya, Hapus</button>
+              <button onClick={() => handleDelete(deleteConfirm.id)} style={{ flex: 1, padding: "10px 0", background: "#a8282f", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500, fontSize: 14 }}>Ya, Hapus</button>
               <button onClick={() => setDeleteConfirm(null)} style={{ flex: 1, padding: "10px 0", background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-secondary)", borderRadius: 8, cursor: "pointer", fontSize: 14 }}>Batal</button>
             </div>
           </>
@@ -2115,7 +2116,7 @@ function OtcSaleCard({ sale, onEdit, onDelete }) {
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "14px 16px" }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-            <span style={{ fontWeight: 600, fontSize: 14, color: "#185FA5" }}>{sale.noSale}</span>
+            <span style={{ fontWeight: 600, fontSize: 14, color: "#1240ab" }}>{sale.noSale}</span>
             <Badge color={METHOD_COLOR[sale.method]}>{METHOD_LABEL[sale.method]}</Badge>
           </div>
           <div style={{ fontSize: 13, color: "var(--color-text-secondary)", marginBottom: 2 }}>
@@ -2134,7 +2135,7 @@ function OtcSaleCard({ sale, onEdit, onDelete }) {
             <button onClick={() => setExpanded((v) => !v)} style={{ padding: "4px 9px", borderRadius: 6, border: "0.5px solid var(--color-border-secondary)", background: "var(--color-background-secondary)", cursor: "pointer", fontSize: 12 }}>
               {expanded ? "▲" : "▼"} Detail
             </button>
-            <button onClick={onEdit} style={{ padding: "4px 9px", borderRadius: 6, border: "0.5px solid #B5D4F4", background: "#E6F1FB", cursor: "pointer", fontSize: 12, color: "#185FA5" }}>✏️ Edit</button>
+            <button onClick={onEdit} style={{ padding: "4px 9px", borderRadius: 6, border: "0.5px solid #b2c7f7", background: "#e5ecfc", cursor: "pointer", fontSize: 12, color: "#1240ab" }}>✏️ Edit</button>
             <button onClick={onDelete} style={{ ...S.dangerBtn }}>🗑️ Hapus</button>
           </div>
         </div>
@@ -2163,7 +2164,7 @@ function OtcSaleCard({ sale, onEdit, onDelete }) {
             <tfoot>
               <tr>
                 <td colSpan={3} style={{ padding: "8px 0 0", textAlign: "right", fontWeight: 700, fontSize: 14, paddingRight: 8 }}>Total</td>
-                <td style={{ padding: "8px 0 0 8px", textAlign: "right", fontWeight: 700, fontSize: 14, color: "#185FA5", fontFamily: "monospace" }}>{formatRupiah(sale.subtotal)}</td>
+                <td style={{ padding: "8px 0 0 8px", textAlign: "right", fontWeight: 700, fontSize: 14, color: "#1240ab", fontFamily: "monospace" }}>{formatRupiah(sale.subtotal)}</td>
               </tr>
             </tfoot>
           </table>
@@ -2225,7 +2226,7 @@ function OtcSaleForm({ form, setForm, formSubtotal, error, isEdit, onSave, onCan
         {formSubtotal > 0 && (
           <div style={{ marginTop: 12, padding: "10px 14px", background: "var(--color-background-secondary)", borderRadius: 8, display: "flex", justifyContent: "space-between", fontWeight: 700 }}>
             <span>Total</span>
-            <span style={{ color: "#185FA5", fontFamily: "monospace", fontSize: 16 }}>{formatRupiah(formSubtotal)}</span>
+            <span style={{ color: "#1240ab", fontFamily: "monospace", fontSize: 16 }}>{formatRupiah(formSubtotal)}</span>
           </div>
         )}
       </div>
@@ -2269,13 +2270,13 @@ function OtcSaleForm({ form, setForm, formSubtotal, error, isEdit, onSave, onCan
       </div>
 
       {error && (
-        <div style={{ background: "#FCEBEB", border: "0.5px solid #F7C1C1", borderRadius: 8, padding: "10px 14px", marginBottom: 12, color: "#A32D2D", fontSize: 13 }}>
+        <div style={{ background: "#fdeaeb", border: "0.5px solid #f9bfc2", borderRadius: 8, padding: "10px 14px", marginBottom: 12, color: "#a8282f", fontSize: 13 }}>
           ⚠️ {error}
         </div>
       )}
 
       <div style={{ display: "flex", gap: 10 }}>
-        <button onClick={onSave} style={{ flex: 1, padding: "14px 0", background: "#185FA5", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", fontWeight: 600, fontSize: 15, fontFamily: "var(--font)" }}>
+        <button onClick={onSave} style={{ flex: 1, padding: "14px 0", background: "#1240ab", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", fontWeight: 600, fontSize: 15, fontFamily: "var(--font)" }}>
           💾 {isEdit ? "Simpan Perubahan" : "Simpan Penjualan"}
         </button>
         <button onClick={onCancel} style={{ flex: 1, padding: "14px 0", background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-secondary)", borderRadius: 10, cursor: "pointer", fontSize: 15, fontFamily: "var(--font)" }}>
@@ -2360,7 +2361,7 @@ function ReportKeuangan({ cashCounts }) {
       ) : (
         <>
           {/* Grand Total */}
-          <div style={{ ...cardStyle, background: "#185FA5", border: "none" }}>
+          <div style={{ ...cardStyle, background: "#1240ab", border: "none" }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 6 }}>Grand Total Bulan Ini</div>
             <div style={{ fontSize: 28, fontWeight: 800, color: "#fff", fontFamily: "monospace" }}>{fmtRp(agg.grandTotal)}</div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 4 }}>Konsultasi + Obat + Transfer</div>
@@ -2370,20 +2371,20 @@ function ReportKeuangan({ cashCounts }) {
           <div style={cardStyle}>
             <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 14, display: "flex", alignItems: "center", gap: 6 }}>
               🩺 Omset Konsultasi
-              <span style={{ marginLeft: "auto", fontSize: 16, fontWeight: 800, color: "#185FA5", fontFamily: "monospace" }}>{fmtRp(agg.konsulTotal)}</span>
+              <span style={{ marginLeft: "auto", fontSize: 16, fontWeight: 800, color: "#1240ab", fontFamily: "monospace" }}>{fmtRp(agg.konsulTotal)}</span>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 8, padding: "12px 16px" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#166534", marginBottom: 6 }}>
-                  {methodBadge("TUNAI", "#bbf7d0", "#166534")} Tunai
+              <div style={{ background: "#effef7", border: "1px solid #b9f9db", borderRadius: 8, padding: "12px 16px" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#136840", marginBottom: 6 }}>
+                  {methodBadge("TUNAI", "#b9f9db", "#136840")} Tunai
                 </div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: "#16a34a", fontFamily: "monospace" }}>{fmtRp(agg.konsulTunai)}</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "#10a962", fontFamily: "monospace" }}>{fmtRp(agg.konsulTunai)}</div>
               </div>
-              <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 8, padding: "12px 16px" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#92400e", marginBottom: 6 }}>
-                  {methodBadge("QRIS", "#fde68a", "#92400e")} QRIS
+              <div style={{ background: "#fff9eb", border: "1px solid #ffdb88", borderRadius: 8, padding: "12px 16px" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#976d09", marginBottom: 6 }}>
+                  {methodBadge("QRIS", "#ffdb88", "#976d09")} QRIS
                 </div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: "#d97706", fontFamily: "monospace" }}>{fmtRp(agg.konsulQris)}</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "#df9c00", fontFamily: "monospace" }}>{fmtRp(agg.konsulQris)}</div>
               </div>
             </div>
           </div>
@@ -2392,20 +2393,20 @@ function ReportKeuangan({ cashCounts }) {
           <div style={cardStyle}>
             <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 14, display: "flex", alignItems: "center", gap: 6 }}>
               💊 Omset Obat
-              <span style={{ marginLeft: "auto", fontSize: 16, fontWeight: 800, color: "#7c3aed", fontFamily: "monospace" }}>{fmtRp(agg.obatTotal)}</span>
+              <span style={{ marginLeft: "auto", fontSize: 16, fontWeight: 800, color: "#8d33f4", fontFamily: "monospace" }}>{fmtRp(agg.obatTotal)}</span>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 8, padding: "12px 16px" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#166534", marginBottom: 6 }}>
-                  {methodBadge("TUNAI", "#bbf7d0", "#166534")} Tunai
+              <div style={{ background: "#effef7", border: "1px solid #b9f9db", borderRadius: 8, padding: "12px 16px" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#136840", marginBottom: 6 }}>
+                  {methodBadge("TUNAI", "#b9f9db", "#136840")} Tunai
                 </div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: "#16a34a", fontFamily: "monospace" }}>{fmtRp(agg.obatTunai)}</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "#10a962", fontFamily: "monospace" }}>{fmtRp(agg.obatTunai)}</div>
               </div>
-              <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 8, padding: "12px 16px" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#92400e", marginBottom: 6 }}>
-                  {methodBadge("QRIS", "#fde68a", "#92400e")} QRIS
+              <div style={{ background: "#fff9eb", border: "1px solid #ffdb88", borderRadius: 8, padding: "12px 16px" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#976d09", marginBottom: 6 }}>
+                  {methodBadge("QRIS", "#ffdb88", "#976d09")} QRIS
                 </div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: "#d97706", fontFamily: "monospace" }}>{fmtRp(agg.obatQris)}</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "#df9c00", fontFamily: "monospace" }}>{fmtRp(agg.obatQris)}</div>
               </div>
             </div>
           </div>
@@ -2416,7 +2417,7 @@ function ReportKeuangan({ cashCounts }) {
               <div style={{ fontWeight: 700, fontSize: 14 }}>🏦 Transfer</div>
               <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginTop: 2 }}>Total seluruh transfer bulan ini</div>
             </div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: "#185FA5", fontFamily: "monospace" }}>{fmtRp(agg.transfer)}</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: "#1240ab", fontFamily: "monospace" }}>{fmtRp(agg.transfer)}</div>
           </div>
 
           {/* Rekapitulasi per hari */}
@@ -2428,9 +2429,9 @@ function ReportKeuangan({ cashCounts }) {
                   <thead>
                     <tr style={{ borderBottom: "1.5px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)" }}>
                       <th style={{ textAlign: "left", padding: "8px 12px", fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase" }}>Tanggal</th>
-                      <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, fontWeight: 700, color: "#185FA5", textTransform: "uppercase" }}>Konsultasi</th>
-                      <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase" }}>Obat</th>
-                      <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, fontWeight: 700, color: "#185FA5", textTransform: "uppercase" }}>Transfer</th>
+                      <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, fontWeight: 700, color: "#1240ab", textTransform: "uppercase" }}>Konsultasi</th>
+                      <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, fontWeight: 700, color: "#8d33f4", textTransform: "uppercase" }}>Obat</th>
+                      <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, fontWeight: 700, color: "#1240ab", textTransform: "uppercase" }}>Transfer</th>
                       <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase" }}>Total</th>
                     </tr>
                   </thead>
@@ -2440,13 +2441,13 @@ function ReportKeuangan({ cashCounts }) {
                         <td style={{ padding: "8px 12px", fontWeight: 600 }}>
                           {new Date(tgl + "T00:00:00").toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" })}
                         </td>
-                        <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace", color: d.konsul > 0 ? "#185FA5" : "var(--color-text-secondary)" }}>
+                        <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace", color: d.konsul > 0 ? "#1240ab" : "var(--color-text-secondary)" }}>
                           {fmtRp(d.konsul)}
                         </td>
-                        <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace", color: d.obat > 0 ? "#7c3aed" : "var(--color-text-secondary)" }}>
+                        <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace", color: d.obat > 0 ? "#8d33f4" : "var(--color-text-secondary)" }}>
                           {fmtRp(d.obat)}
                         </td>
-                        <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace", color: d.transfer > 0 ? "#185FA5" : "var(--color-text-secondary)" }}>
+                        <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace", color: d.transfer > 0 ? "#1240ab" : "var(--color-text-secondary)" }}>
                           {fmtRp(d.transfer)}
                         </td>
                         <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace", fontWeight: 700 }}>
@@ -2458,9 +2459,9 @@ function ReportKeuangan({ cashCounts }) {
                   <tfoot>
                     <tr style={{ borderTop: "2px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", fontWeight: 700 }}>
                       <td style={{ padding: "10px 12px", fontSize: 12 }}>TOTAL</td>
-                      <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "monospace", color: "#185FA5" }}>{fmtRp(agg.konsulTotal)}</td>
-                      <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "monospace", color: "#7c3aed" }}>{fmtRp(agg.obatTotal)}</td>
-                      <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "monospace", color: "#185FA5" }}>{fmtRp(agg.transfer)}</td>
+                      <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "monospace", color: "#1240ab" }}>{fmtRp(agg.konsulTotal)}</td>
+                      <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "monospace", color: "#8d33f4" }}>{fmtRp(agg.obatTotal)}</td>
+                      <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "monospace", color: "#1240ab" }}>{fmtRp(agg.transfer)}</td>
                       <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "monospace", fontSize: 14 }}>{fmtRp(agg.grandTotal)}</td>
                     </tr>
                   </tfoot>
@@ -2504,7 +2505,7 @@ function OtcStats({ sales, byMethod, totalOmset }) {
     total: monthly.filter((s) => s.method === m).reduce((s, r) => s + r.subtotal, 0),
     count: monthly.filter((s) => s.method === m).length,
   }));
-  const methodColors = { cash: "#3B6D11", transfer: "#185FA5", qris: "#854F0B" };
+  const methodColors = { cash: "#0d7142", transfer: "#1240ab", qris: "#8a6206" };
 
   return (
     <div>
@@ -2550,7 +2551,7 @@ function OtcStats({ sales, byMethod, totalOmset }) {
               {topItems.map((it, i) => (
                 <tr key={it.nama} style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
                   <td style={{ padding: "7px 0" }}>
-                    <span style={{ fontWeight: i < 3 ? 700 : 400, color: i < 3 ? "#185FA5" : "var(--color-text-primary)" }}>
+                    <span style={{ fontWeight: i < 3 ? 700 : 400, color: i < 3 ? "#1240ab" : "var(--color-text-primary)" }}>
                       {i < 3 ? ["🥇 ", "🥈 ", "🥉 "][i] : `${i + 1}. `}{it.nama}
                     </span>
                   </td>
@@ -2576,7 +2577,7 @@ function OtcStats({ sales, byMethod, totalOmset }) {
                     {new Date(date + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
                   </span>
                   <div style={{ flex: 1, height: 8, background: "var(--color-background-secondary)", borderRadius: 4, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${pct}%`, background: "#185FA5", borderRadius: 4, transition: "width 0.3s" }} />
+                    <div style={{ height: "100%", width: `${pct}%`, background: "#1240ab", borderRadius: 4, transition: "width 0.3s" }} />
                   </div>
                   <span style={{ fontSize: 12, fontFamily: "monospace", fontWeight: 600, width: 100, textAlign: "right" }}>{formatRupiah(total)}</span>
                 </div>
@@ -2645,10 +2646,10 @@ function RealtimeIndicator() {
   }, []);
 
   const config = {
-    live:       { dot: "#22c55e", label: "Live", title: "Realtime aktif — update instan antar pengguna" },
-    polling:    { dot: "#f59e0b", label: "Sync", title: "Mode polling 2 detik — Realtime tidak tersedia" },
-    connecting: { dot: "#94a3b8", label: "...",  title: "Menghubungkan ke Supabase Realtime..." },
-    offline:    { dot: "#ef4444", label: "Offline", title: "Supabase tidak dikonfigurasi" },
+    live:       { dot: "#1bcc79", label: "Live", title: "Realtime aktif — update instan antar pengguna" },
+    polling:    { dot: "#feb302", label: "Sync", title: "Mode polling 2 detik — Realtime tidak tersedia" },
+    connecting: { dot: "#939eb9", label: "...",  title: "Menghubungkan ke Supabase Realtime..." },
+    offline:    { dot: "#f63d46", label: "Offline", title: "Supabase tidak dikonfigurasi" },
   }[status];
 
   const statusImg = {
@@ -2662,8 +2663,8 @@ function RealtimeIndicator() {
     <div title={config.title} style={{
       display: "flex", alignItems: "center", gap: 5,
       padding: "2px 8px", borderRadius: 20, marginRight: 8,
-      background: status === "live" ? "#f0fdf4" : status === "polling" ? "#fef3c7" : "#f8fafc",
-      border: `1px solid ${status === "live" ? "#bbf7d0" : status === "polling" ? "#fcd34d" : "#e2e8f0"}`,
+      background: status === "live" ? "#effef7" : status === "polling" ? "#ffeec6" : "#f8f9fc",
+      border: `1px solid ${status === "live" ? "#b9f9db" : status === "polling" ? "#ffc94a" : "#e1e6f1"}`,
       cursor: "default", flexShrink: 0,
     }}>
       <img
@@ -2675,7 +2676,7 @@ function RealtimeIndicator() {
           filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.15))",
         }}
       />
-      <span style={{ fontSize: 11, fontWeight: 600, color: status === "live" ? "#166534" : status === "polling" ? "#92400e" : "#64748b" }}>
+      <span style={{ fontSize: 11, fontWeight: 600, color: status === "live" ? "#136840" : status === "polling" ? "#976d09" : "#626f8d" }}>
         {config.label}
       </span>
       <style>{`@keyframes rtpulse { 0%,100%{opacity:1} 50%{opacity:.5} }`}</style>
@@ -2758,6 +2759,7 @@ export default function App() {
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-page)", fontFamily: "var(--font)" }}>
+      <AutoBackupWatcher currentUser={currentUser} />
 
       {/* ── Top Bar ───────────────────────────────────────────── */}
       <div style={{
@@ -2800,7 +2802,7 @@ export default function App() {
                 : <span style={{ fontSize: 14 }}>{n.icon}</span>
               }
               {n.label}
-              {n.id === "eresep-apoteker" && (() => { const w = prescriptions.filter(rx => rx.status === "MENUNGGU_DISPENSING").length; return w > 0 ? (<span style={{ background: "#f59e0b", color: "#fff", fontSize: 10, borderRadius: 10, padding: "1px 6px", fontWeight: 700 }}>{w}</span>) : null; })()}
+              {n.id === "eresep-apoteker" && (() => { const w = prescriptions.filter(rx => rx.status === "MENUNGGU_DISPENSING").length; return w > 0 ? (<span style={{ background: "#feb302", color: "#fff", fontSize: 10, borderRadius: 10, padding: "1px 6px", fontWeight: 700 }}>{w}</span>) : null; })()}
               {n.id === "copy-resep" && copyResepList.length > 0 && (
                 <span style={{ background: "var(--brand)", color: "#fff", fontSize: 10, borderRadius: 10, padding: "1px 6px", fontWeight: 700 }}>
                   {copyResepList.length}
@@ -2851,41 +2853,92 @@ export default function App() {
       )}
 
       {/* ── Page Content ──────────────────────────────────────── */}
-      <div style={{ padding: "24px 28px 0", maxWidth: "100%" }}>
-        {effectivePage === "cashier" && <PageCashier doctors={doctors} transactions={transactions} setTransactions={setTransactions} invoiceCounter={invoiceCounter} setInvoiceCounter={setInvoiceCounter} settings={settings} onNavigateToRekamMedis={() => setPage("rekam-medis")} />}
-        {effectivePage === "eprescribing" && <PageEPrescribing doctors={doctors} prescriptions={prescriptions} setPrescriptions={setPrescriptions} prescriptionCounter={prescriptionCounter} setPrescriptionCounter={setPrescriptionCounter} printSettings={printSettings} />}
-        {effectivePage === "eresep-dokter" && (
-          <PageEResepDokter
-            doctors={doctors}
-            prescriptions={prescriptions}
-            setPrescriptions={setPrescriptions}
-            prescriptionCounter={prescriptionCounter}
-            setPrescriptionCounter={setPrescriptionCounter}
-            printSettings={printSettings}
-            initialPatient={pendingPatient}
-            onPatientConsumed={() => setPendingPatient(null)}
-            currentUser={currentUser}
-            onNavigateToRekamMedis={() => setPage("rekam-medis")}
-          />
-        )}
-        {effectivePage === "rekam-medis" && (
-          <PageRekamMedis
-            doctors={doctors}
-            currentUser={currentUser}
-            onCreateRecipeFor={(patient) => { setPendingPatient(patient); setPage("eresep-dokter"); }}
-          />
-        )}
-        {effectivePage === "eresep-apoteker" && <PageEResepApoteker prescriptions={prescriptions} setPrescriptions={setPrescriptions} doctors={doctors} printSettings={printSettings} />}
-        {effectivePage === "copy-resep" && <PageCopyResep copyResepList={copyResepList} setCopyResepList={setCopyResepList} copyResepCounter={copyResepCounter} setCopyResepCounter={setCopyResepCounter} copyResepSettings={copyResepSettings} />}
-        {effectivePage === "history" && <PageHistory transactions={transactions} setTransactions={setTransactions} doctors={doctors} settings={settings} />}
-        {effectivePage === "doctors" && <PageDoctors doctors={doctors} setDoctors={setDoctors} />}
-        {effectivePage === "reports" && <PageReports transactions={transactions} doctors={doctors} cashCounts={cashCounts} setCashCounts={setCashCounts} settings={settings} otcSales={otcSales} setOtcSales={setOtcSales} otcCounter={otcCounter} setOtcCounter={setOtcCounter} />}
-        {effectivePage === "settings" && <PageSettings settings={settings} setSettings={setSettings} />}
-        {effectivePage === "prescription-settings" && <PagePrescriptionSettings printSettings={printSettings} setPrintSettings={setPrintSettings} />}
-        {effectivePage === "copy-resep-settings" && <PageCopyResepSettings copyResepSettings={copyResepSettings} setCopyResepSettings={setCopyResepSettings} />}
-        {effectivePage === "account" && <PageAkunSupabase currentUser={currentUser} onLogout={handleLogout} />}
-        {effectivePage === "dev-panel" && <PageDevPanel currentUser={currentUser} />}
-      </div>
+      {/* Role "manager": boleh melihat semua menu navbar, tapi hanya boleh
+          mengedit/menyimpan data di menu "Laporan" (reports). Di menu lain,
+          seluruh form/tombol di-disable via <fieldset> bawaan browser —
+          navigasi navbar di atas tetap aktif karena berada di luar wrapper ini. */}
+      {currentUser.role === "manager" && effectivePage !== "reports" ? (
+        <fieldset disabled style={{ border: "none", margin: 0, padding: "24px 28px 0", maxWidth: "100%" }}>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8, marginBottom: 14,
+            background: "var(--accent-gold-light)", border: "1.5px solid var(--accent-gold)",
+            color: "var(--accent-gold-dark)", borderRadius: 8, padding: "8px 14px",
+            fontSize: 12.5, fontWeight: 600, maxWidth: "fit-content",
+          }}>
+            👁️ Mode Lihat Saja — role Manager hanya bisa mengedit di menu <strong>Laporan</strong>
+          </div>
+          {effectivePage === "cashier" && <PageCashier doctors={doctors} transactions={transactions} setTransactions={setTransactions} invoiceCounter={invoiceCounter} setInvoiceCounter={setInvoiceCounter} settings={settings} onNavigateToRekamMedis={() => setPage("rekam-medis")} />}
+          {effectivePage === "eprescribing" && <PageEPrescribing doctors={doctors} prescriptions={prescriptions} setPrescriptions={setPrescriptions} prescriptionCounter={prescriptionCounter} setPrescriptionCounter={setPrescriptionCounter} printSettings={printSettings} />}
+          {effectivePage === "eresep-dokter" && (
+            <PageEResepDokter
+              doctors={doctors}
+              prescriptions={prescriptions}
+              setPrescriptions={setPrescriptions}
+              prescriptionCounter={prescriptionCounter}
+              setPrescriptionCounter={setPrescriptionCounter}
+              printSettings={printSettings}
+              initialPatient={pendingPatient}
+              onPatientConsumed={() => setPendingPatient(null)}
+              currentUser={currentUser}
+              onNavigateToRekamMedis={() => setPage("rekam-medis")}
+            />
+          )}
+          {effectivePage === "rekam-medis" && (
+            <PageRekamMedis
+              doctors={doctors}
+              currentUser={currentUser}
+              settings={settings}
+              onCreateRecipeFor={(patient) => { setPendingPatient(patient); setPage("eresep-dokter"); }}
+            />
+          )}
+          {effectivePage === "eresep-apoteker" && <PageEResepApoteker prescriptions={prescriptions} setPrescriptions={setPrescriptions} doctors={doctors} printSettings={printSettings} />}
+          {effectivePage === "copy-resep" && <PageCopyResep copyResepList={copyResepList} setCopyResepList={setCopyResepList} copyResepCounter={copyResepCounter} setCopyResepCounter={setCopyResepCounter} copyResepSettings={copyResepSettings} />}
+          {effectivePage === "history" && <PageHistory transactions={transactions} setTransactions={setTransactions} doctors={doctors} settings={settings} />}
+          {effectivePage === "doctors" && <PageDoctors doctors={doctors} setDoctors={setDoctors} />}
+          {effectivePage === "settings" && <PageSettings settings={settings} setSettings={setSettings} />}
+          {effectivePage === "prescription-settings" && <PagePrescriptionSettings printSettings={printSettings} setPrintSettings={setPrintSettings} />}
+          {effectivePage === "copy-resep-settings" && <PageCopyResepSettings copyResepSettings={copyResepSettings} setCopyResepSettings={setCopyResepSettings} />}
+          {effectivePage === "account" && <PageAkunSupabase currentUser={currentUser} onLogout={handleLogout} />}
+          {effectivePage === "dev-panel" && <PageDevPanel currentUser={currentUser} />}
+        </fieldset>
+      ) : (
+        <div style={{ padding: "24px 28px 0", maxWidth: "100%" }}>
+          {effectivePage === "cashier" && <PageCashier doctors={doctors} transactions={transactions} setTransactions={setTransactions} invoiceCounter={invoiceCounter} setInvoiceCounter={setInvoiceCounter} settings={settings} onNavigateToRekamMedis={() => setPage("rekam-medis")} />}
+          {effectivePage === "eprescribing" && <PageEPrescribing doctors={doctors} prescriptions={prescriptions} setPrescriptions={setPrescriptions} prescriptionCounter={prescriptionCounter} setPrescriptionCounter={setPrescriptionCounter} printSettings={printSettings} />}
+          {effectivePage === "eresep-dokter" && (
+            <PageEResepDokter
+              doctors={doctors}
+              prescriptions={prescriptions}
+              setPrescriptions={setPrescriptions}
+              prescriptionCounter={prescriptionCounter}
+              setPrescriptionCounter={setPrescriptionCounter}
+              printSettings={printSettings}
+              initialPatient={pendingPatient}
+              onPatientConsumed={() => setPendingPatient(null)}
+              currentUser={currentUser}
+              onNavigateToRekamMedis={() => setPage("rekam-medis")}
+            />
+          )}
+          {effectivePage === "rekam-medis" && (
+            <PageRekamMedis
+              doctors={doctors}
+              currentUser={currentUser}
+              settings={settings}
+              onCreateRecipeFor={(patient) => { setPendingPatient(patient); setPage("eresep-dokter"); }}
+            />
+          )}
+          {effectivePage === "eresep-apoteker" && <PageEResepApoteker prescriptions={prescriptions} setPrescriptions={setPrescriptions} doctors={doctors} printSettings={printSettings} />}
+          {effectivePage === "copy-resep" && <PageCopyResep copyResepList={copyResepList} setCopyResepList={setCopyResepList} copyResepCounter={copyResepCounter} setCopyResepCounter={setCopyResepCounter} copyResepSettings={copyResepSettings} />}
+          {effectivePage === "history" && <PageHistory transactions={transactions} setTransactions={setTransactions} doctors={doctors} settings={settings} />}
+          {effectivePage === "doctors" && <PageDoctors doctors={doctors} setDoctors={setDoctors} />}
+          {effectivePage === "reports" && <PageReports transactions={transactions} doctors={doctors} cashCounts={cashCounts} setCashCounts={setCashCounts} settings={settings} otcSales={otcSales} setOtcSales={setOtcSales} otcCounter={otcCounter} setOtcCounter={setOtcCounter} />}
+          {effectivePage === "settings" && <PageSettings settings={settings} setSettings={setSettings} />}
+          {effectivePage === "prescription-settings" && <PagePrescriptionSettings printSettings={printSettings} setPrintSettings={setPrintSettings} />}
+          {effectivePage === "copy-resep-settings" && <PageCopyResepSettings copyResepSettings={copyResepSettings} setCopyResepSettings={setCopyResepSettings} />}
+          {effectivePage === "account" && <PageAkunSupabase currentUser={currentUser} onLogout={handleLogout} />}
+          {effectivePage === "dev-panel" && <PageDevPanel currentUser={currentUser} />}
+        </div>
+      )}
     </div>
   );
 }

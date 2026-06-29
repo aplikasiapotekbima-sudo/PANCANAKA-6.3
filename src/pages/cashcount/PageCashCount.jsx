@@ -41,9 +41,9 @@ function pad(str, len, dir = "right") {
 
 // ─── STATUS SELISIH ───────────────────────────────────────────────────────────
 function getSelisihStatus(selisih) {
-  if (selisih === 0) return { label: "SESUAI",        color: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0", icon: "✅" };
-  if (selisih > 0)   return { label: "SELISIH LEBIH", color: "#d97706", bg: "#fffbeb", border: "#fde68a", icon: "⬆️" };
-  return               { label: "SELISIH KURANG",     color: "#dc2626", bg: "#fef2f2", border: "#fecaca", icon: "⬇️" };
+  if (selisih === 0) return { label: "SESUAI",        color: "#10a962", bg: "#effef7", border: "#b9f9db", icon: "✅" };
+  if (selisih > 0)   return { label: "SELISIH LEBIH", color: "#df9c00", bg: "#fff9eb", border: "#ffdb88", icon: "⬆️" };
+  return               { label: "SELISIH KURANG",     color: "#e31f29", bg: "#fef2f2", border: "#ffc9cc", icon: "⬇️" };
 }
 
 // ─── PRINT ────────────────────────────────────────────────────────────────────
@@ -488,8 +488,8 @@ export default function PageCashCount({ cashCounts, setCashCounts, settings }) {
           )}
 
           {/* Setor Manajemen + Modal Besok — last step closing */}
-          <div style={{ background: "var(--bg-card)", borderRadius: 10, border: "2px solid #7c3aed", padding: 16, marginTop: 16 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+          <div style={{ background: "var(--bg-card)", borderRadius: 10, border: "2px solid #8d33f4", padding: 16, marginTop: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#8d33f4", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>
               🏁 Langkah Akhir Closing
             </div>
             <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 14 }}>
@@ -530,18 +530,18 @@ export default function PageCashCount({ cashCounts, setCashCounts, settings }) {
               </div>
             </div>
             {(setorMgmtNum > 0 || modalBesokNum > 0) && (
-              <div style={{ marginTop: 12, padding: "10px 12px", background: "rgba(124,58,237,0.05)", border: "1px solid #ddd6fe", borderRadius: 8, fontSize: 12.5 }}>
+              <div style={{ marginTop: 12, padding: "10px 12px", background: "rgba(124,58,237,0.05)", border: "1px solid #d5e2ff", borderRadius: 8, fontSize: 12.5 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
                   <span style={{ color: "var(--text-secondary)" }}>Setor Manajemen</span>
-                  <span style={{ fontFamily: "monospace", color: "#7c3aed", fontWeight: 600 }}>Rp {formatRp(setorMgmtNum)}</span>
+                  <span style={{ fontFamily: "monospace", color: "#8d33f4", fontWeight: 600 }}>Rp {formatRp(setorMgmtNum)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
                   <span style={{ color: "var(--text-secondary)" }}>Modal Besok Pagi</span>
-                  <span style={{ fontFamily: "monospace", color: "#0284c7", fontWeight: 600 }}>Rp {formatRp(modalBesokNum)}</span>
+                  <span style={{ fontFamily: "monospace", color: "#003cc9", fontWeight: 600 }}>Rp {formatRp(modalBesokNum)}</span>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px dashed #ddd6fe", paddingTop: 6, marginTop: 4 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px dashed #d5e2ff", paddingTop: 6, marginTop: 4 }}>
                   <span style={{ color: "var(--text-secondary)", fontWeight: 600 }}>Total Keluar Kas</span>
-                  <span style={{ fontFamily: "monospace", fontWeight: 700, color: (setorMgmtNum + modalBesokNum) > 0 ? "#1f2937" : "var(--text-muted)" }}>Rp {formatRp(setorMgmtNum + modalBesokNum)}</span>
+                  <span style={{ fontFamily: "monospace", fontWeight: 700, color: (setorMgmtNum + modalBesokNum) > 0 ? "#1e2638" : "var(--text-muted)" }}>Rp {formatRp(setorMgmtNum + modalBesokNum)}</span>
                 </div>
               </div>
             )}
@@ -617,10 +617,10 @@ function GrandTotalCard({
   totalOmsetSistem, selisihKas, setorManajemen, modalBesok, statusClosing,
 }) {
   const rows = [
-    { label: "Total Tunai Fisik",       val: totalTunai,                color: "#16a34a" },
-    { label: "Omset Konsultasi QRIS",   val: omsetNum.omsetKonsulQris,  color: "#d97706" },
-    { label: "Omset Obat QRIS",         val: omsetNum.omsetObatQris,    color: "#d97706" },
-    { label: "Total Transfer",          val: omsetNum.totalTransfer,    color: "#185FA5" },
+    { label: "Total Tunai Fisik",       val: totalTunai,                color: "#10a962" },
+    { label: "Omset Konsultasi QRIS",   val: omsetNum.omsetKonsulQris,  color: "#df9c00" },
+    { label: "Omset Obat QRIS",         val: omsetNum.omsetObatQris,    color: "#df9c00" },
+    { label: "Total Transfer",          val: omsetNum.totalTransfer,    color: "#1240ab" },
   ];
 
   const selisihSign = selisihKas >= 0 ? "+" : "-";
@@ -660,13 +660,13 @@ function GrandTotalCard({
           </div>
           <div style={{ display: "grid", gap: 8 }}>
             {/* Modal Pagi */}
-            <KasRow label="Modal Pagi" value={modalPagi} color="#6366f1" note="Uang awal kas" />
+            <KasRow label="Modal Pagi" value={modalPagi} color="#5d8bf7" note="Uang awal kas" />
             {/* Uang Tunai Masuk */}
-            <KasRow label="Uang Tunai Masuk" value={uangTunaiMasuk} color="#16a34a" note="Tunai Fisik − Modal Pagi" highlight />
+            <KasRow label="Uang Tunai Masuk" value={uangTunaiMasuk} color="#10a962" note="Tunai Fisik − Modal Pagi" highlight />
             {/* Omset Tunai Sistem */}
-            <KasRow label="Omset Tunai Sistem" value={omsetTunaiSistem} color="#0284c7" note="Konsultasi Tunai + Obat Tunai" />
+            <KasRow label="Omset Tunai Sistem" value={omsetTunaiSistem} color="#003cc9" note="Konsultasi Tunai + Obat Tunai" />
             {/* Total Omset Sistem */}
-            <KasRow label="Total Omset Sistem" value={totalOmsetSistem} color="#0284c7" note="Semua metode pembayaran" />
+            <KasRow label="Total Omset Sistem" value={totalOmsetSistem} color="#003cc9" note="Semua metode pembayaran" />
 
             {/* Selisih Kas */}
             <div style={{
@@ -696,8 +696,8 @@ function GrandTotalCard({
             </div>
 
             {/* Setor Manajemen + Modal Besok */}
-            <KasRow label="Setor ke Manajemen" value={setorManajemen} color="#7c3aed" note="Diserahkan ke manajemen" />
-            <KasRow label="Modal Besok Pagi" value={modalBesok} color="#0284c7" note="Uang yang ditinggal untuk besok" />
+            <KasRow label="Setor ke Manajemen" value={setorManajemen} color="#8d33f4" note="Diserahkan ke manajemen" />
+            <KasRow label="Modal Besok Pagi" value={modalBesok} color="#003cc9" note="Uang yang ditinggal untuk besok" />
           </div>
         </div>
       </div>
@@ -711,7 +711,7 @@ function KasRow({ label, value, color, note, highlight }) {
       display: "flex", justifyContent: "space-between", alignItems: "center",
       padding: "8px 12px",
       background: highlight ? "rgba(22,163,74,0.06)" : "var(--bg-input)",
-      border: highlight ? "1px solid #bbf7d0" : "1px solid transparent",
+      border: highlight ? "1px solid #b9f9db" : "1px solid transparent",
       borderRadius: 6,
     }}>
       <div>
@@ -798,11 +798,11 @@ function HistoryView({ cashCounts, onPrint, detailId, setDetailId, detailRecord,
             <div style={{ borderTop: "1.5px solid var(--border-mid)", paddingTop: 14 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", marginBottom: 10, textTransform: "uppercase" }}>📊 Rekap Kas</div>
               {[
-                ["Modal Pagi",          modalPagi,         "#6366f1"],
-                ["Uang Tunai Masuk",    uangTunaiMasuk,    "#16a34a"],
-                ["Omset Tunai Sistem",  omsetTunaiSistem,  "#0284c7"],
-                ["Setor Manajemen",     setorManajemen,    "#7c3aed"],
-                ["Modal Besok Pagi",    modalBesok,        "#0284c7"],
+                ["Modal Pagi",          modalPagi,         "#5d8bf7"],
+                ["Uang Tunai Masuk",    uangTunaiMasuk,    "#10a962"],
+                ["Omset Tunai Sistem",  omsetTunaiSistem,  "#003cc9"],
+                ["Setor Manajemen",     setorManajemen,    "#8d33f4"],
+                ["Modal Besok Pagi",    modalBesok,        "#003cc9"],
               ].map(([label, val, color]) => (
                 <div key={label} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: 13, borderBottom: "1px solid var(--border-light)" }}>
                   <span style={{ color: "var(--text-secondary)" }}>{label}</span>

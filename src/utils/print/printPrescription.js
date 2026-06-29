@@ -293,7 +293,7 @@ export function generatePrescriptionHTML(prescription, printSettings) {
     /* ── ALLERGIES ────────────────────────────── */
     .allergies {
       font-size: ${Math.round(fontSize * 0.88)}px;
-      color: #c00;
+      color: #cc000a;
       margin-bottom: 4px;
     }
 
@@ -389,7 +389,7 @@ export function generatePrescriptionHTML(prescription, printSettings) {
       <span class="patient-value">${patientGender === 'L' ? 'Laki-laki' : patientGender === 'P' ? 'Perempuan' : '-'}</span>
     </div>
     ${allergies ? `
-    <div class="patient-row" style="color:#c00">
+    <div class="patient-row" style="color:#cc000a">
       <span class="patient-label">Alergi</span>
       <span class="patient-colon">:</span>
       <span class="patient-value">${allergies}</span>

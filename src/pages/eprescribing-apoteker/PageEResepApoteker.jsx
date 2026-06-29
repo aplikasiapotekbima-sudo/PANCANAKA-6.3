@@ -76,7 +76,7 @@ function DetailModal({ rx, onClose, onStatusChange, printSettings }) {
             {rx.allergies && (
               <div style={{ marginTop: 10, padding: "8px 12px", background: "var(--red-bg)", border: "1.5px solid var(--red-border)", borderRadius: "var(--r-sm)" }}>
                 <span style={{ fontSize: 12, fontWeight: 700, color: "var(--red-text)" }}>⚠️ Alergi: </span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#b91c1c" }}>{rx.allergies}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: "#bf161e" }}>{rx.allergies}</span>
               </div>
             )}
           </section>
@@ -88,10 +88,10 @@ function DetailModal({ rx, onClose, onStatusChange, printSettings }) {
               {(rx.medicines || []).map((med, i) => (
                 <div key={i} style={{ background: "var(--bg-input)", border: "1.5px solid var(--border-mid)", borderRadius: "var(--r-sm)", overflow: "hidden" }}>
                   {/* Header: nomor + racikan badge */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", borderBottom: "1px solid var(--border-mid)", background: "#f8fafc" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", borderBottom: "1px solid var(--border-mid)", background: "#f8f9fc" }}>
                     <span style={{ width: 22, height: 22, background: "var(--brand)", color: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</span>
                     {med.compounded && (
-                      <span style={{ fontSize: 11, background: "#fef3c7", border: "1px solid #fcd34d", color: "#92400e", borderRadius: 10, padding: "1px 8px", fontWeight: 600 }}>🧪 Racikan</span>
+                      <span style={{ fontSize: 11, background: "#ffeec6", border: "1px solid #ffc94a", color: "#976d09", borderRadius: 10, padding: "1px 8px", fontWeight: 600 }}>🧪 Racikan</span>
                     )}
                   </div>
                   {/* Isi resep — freestyle text atau format lama */}
@@ -124,7 +124,7 @@ function DetailModal({ rx, onClose, onStatusChange, printSettings }) {
           {rx.notesForPharmacist && (
             <section>
               <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 10 }}>💬 Catatan Dokter untuk Apoteker</div>
-              <div style={{ padding: "14px 16px", background: "#fffbeb", border: "2px solid #f59e0b", borderRadius: "var(--r-sm)", fontSize: 13.5, lineHeight: 1.7, color: "#78350f", whiteSpace: "pre-wrap" }}>
+              <div style={{ padding: "14px 16px", background: "#fff9eb", border: "2px solid #feb302", borderRadius: "var(--r-sm)", fontSize: 13.5, lineHeight: 1.7, color: "#7c5a0b", whiteSpace: "pre-wrap" }}>
                 {rx.notesForPharmacist}
               </div>
             </section>
@@ -302,11 +302,11 @@ export default function PageEResepApoteker({
           </div>
         </div>
         {waitingCount > 0 && (
-          <div style={{ marginLeft: "auto", padding: "8px 16px", background: "#fef3c7", border: "2px solid #f59e0b", borderRadius: "var(--r-md)", display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ marginLeft: "auto", padding: "8px 16px", background: "#ffeec6", border: "2px solid #feb302", borderRadius: "var(--r-md)", display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 18 }}>⏳</span>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 14, color: "#92400e" }}>{waitingCount} Resep Menunggu</div>
-              <div style={{ fontSize: 11.5, color: "#b45309" }}>Perlu segera disiapkan</div>
+              <div style={{ fontWeight: 700, fontSize: 14, color: "#976d09" }}>{waitingCount} Resep Menunggu</div>
+              <div style={{ fontSize: 11.5, color: "#bb8302" }}>Perlu segera disiapkan</div>
             </div>
           </div>
         )}
@@ -419,12 +419,12 @@ export default function PageEResepApoteker({
                       key={rx.id}
                       style={{
                         borderBottom: "1.5px solid var(--border-mid)",
-                        background: isNew ? "#fffbeb" : i % 2 === 0 ? "#fafafa" : "#fff",
+                        background: isNew ? "#fff9eb" : i % 2 === 0 ? "#fafafa" : "#fff",
                         transition: "background 0.15s",
                         cursor: "pointer",
                       }}
                       onMouseEnter={e => e.currentTarget.style.background = "var(--bg-hover)"}
-                      onMouseLeave={e => e.currentTarget.style.background = isNew ? "#fffbeb" : i % 2 === 0 ? "#fafafa" : "#fff"}
+                      onMouseLeave={e => e.currentTarget.style.background = isNew ? "#fff9eb" : i % 2 === 0 ? "#fafafa" : "#fff"}
                     >
                       <td style={{ padding: "12px 12px" }}>
                         <div style={{ fontWeight: 700, color: "var(--brand)", fontSize: 13 }}>{rx.prescriptionNumber}</div>
@@ -441,7 +441,7 @@ export default function PageEResepApoteker({
                           {rx.patientWeight ? ` · ${rx.patientWeight}kg` : ""}
                         </div>
                         {rx.allergies && (
-                          <div style={{ fontSize: 11, color: "#b91c1c", fontWeight: 600, marginTop: 2 }}>⚠️ {rx.allergies}</div>
+                          <div style={{ fontSize: 11, color: "#bf161e", fontWeight: 600, marginTop: 2 }}>⚠️ {rx.allergies}</div>
                         )}
                       </td>
                       <td style={{ padding: "12px 12px", color: "var(--text-secondary)", fontSize: 13 }}>
@@ -450,13 +450,13 @@ export default function PageEResepApoteker({
                       <td style={{ padding: "12px 12px", textAlign: "center" }}>
                         <span style={{ fontWeight: 700, fontSize: 14, color: "var(--text-primary)" }}>{rx.medicines?.length || 0}</span>
                         {rx.medicines?.some(m => m.compounded) && (
-                          <div style={{ fontSize: 10.5, color: "#92400e", fontWeight: 600 }}>🧪 ada racikan</div>
+                          <div style={{ fontSize: 10.5, color: "#976d09", fontWeight: 600 }}>🧪 ada racikan</div>
                         )}
                       </td>
                       <td style={{ padding: "12px 12px" }}>
                         <RxStatusBadge status={rx.status} />
                         {rx.notesForPharmacist && (
-                          <div style={{ fontSize: 10.5, color: "#b45309", marginTop: 3, display: "flex", alignItems: "center", gap: 3 }}>
+                          <div style={{ fontSize: 10.5, color: "#bb8302", marginTop: 3, display: "flex", alignItems: "center", gap: 3 }}>
                             <span>💬</span> ada catatan dokter
                           </div>
                         )}

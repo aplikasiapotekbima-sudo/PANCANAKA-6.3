@@ -114,12 +114,12 @@ export default function CopyResepPreview({ copyResep, copyResepSettings, onClose
         <div style={{ fontSize: 12, color: "var(--color-text-secondary)", lineHeight: 1.5, marginBottom: 4 }}>
           Ukuran kertas: <strong>A4 Portrait</strong><br />Margin: 10mm semua sisi
         </div>
-        <div style={{ padding: "7px 10px", background: "#EFF6FF", border: "0.5px solid #93C5FD", borderRadius: 6, fontSize: 11, color: "#1E40AF", lineHeight: 1.5, marginBottom: 4 }}>
+        <div style={{ padding: "7px 10px", background: "#eff4ff", border: "0.5px solid #91b2ff", borderRadius: 6, fontSize: 11, color: "#1847b5", lineHeight: 1.5, marginBottom: 4 }}>
           ✏️ <strong>No. Salinan Resep</strong> dapat diedit langsung di dokumen sebelum cetak.
         </div>
         <button
           onClick={handlePrint}
-          style={{ padding: "11px 0", background: "#185FA5", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600, fontSize: 14 }}
+          style={{ padding: "11px 0", background: "#1240ab", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600, fontSize: 14 }}
         >
           🖨️ Cetak Sekarang
         </button>
@@ -129,7 +129,7 @@ export default function CopyResepPreview({ copyResep, copyResepSettings, onClose
         >
           ✕ Tutup
         </button>
-        <div style={{ marginTop: 6, padding: "8px 10px", background: "#FAEEDA", border: "0.5px solid #FAC775", borderRadius: 6, fontSize: 11, color: "#854F0B", lineHeight: 1.5 }}>
+        <div style={{ marginTop: 6, padding: "8px 10px", background: "#fbf1d9", border: "0.5px solid #ffd470", borderRadius: 6, fontSize: 11, color: "#8a6206", lineHeight: 1.5 }}>
           💡 Set ukuran kertas <strong>A4</strong>, margin <strong>10mm</strong>.
         </div>
       </div>
@@ -185,7 +185,7 @@ export default function CopyResepPreview({ copyResep, copyResepSettings, onClose
                 style={{
                   fontFamily: "monospace", fontSize: 11, fontWeight: 700, color: "#000",
                   border: "1px dashed #aaa", borderRadius: 3, padding: "1px 6px",
-                  background: "#fffde7", outline: "none", minWidth: 160,
+                  background: "#fff8e7", outline: "none", minWidth: 160,
                 }}
                 title="Klik untuk edit nomor salinan resep sebelum cetak"
               />

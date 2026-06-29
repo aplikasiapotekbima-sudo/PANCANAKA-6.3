@@ -34,7 +34,7 @@ export default function LoginPageSupabase({ onLogin, clinicName }) {
     <div style={{
       minHeight: "100svh", width: "100%",
       display: "flex", alignItems: "center", justifyContent: "center",
-      background: "linear-gradient(160deg, #f0fdf4 0%, #eff6ff 50%, #faf5ff 100%)",
+      background: "linear-gradient(160deg, #effef7 0%, #eff4ff 50%, #faf5ff 100%)",
       fontFamily: "var(--font)", padding: "20px 16px",
     }}>
       <div style={{ width: "100%", maxWidth: 440, display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
@@ -61,7 +61,7 @@ export default function LoginPageSupabase({ onLogin, clinicName }) {
 
         {/* ── Nama klinik ── */}
         <div style={{ textAlign: "center", marginBottom: 20 }}>
-          <div style={{ fontSize: 13, color: "#6b7280", fontWeight: 500, letterSpacing: 0.3 }}>
+          <div style={{ fontSize: 13, color: "#6b7180", fontWeight: 500, letterSpacing: 0.3 }}>
             {clinicName || "Apotek Bima — Sistem Kasir & E-Resep"}
           </div>
         </div>
@@ -75,7 +75,7 @@ export default function LoginPageSupabase({ onLogin, clinicName }) {
           boxShadow: "0 4px 24px rgba(0,0,0,0.09)",
           padding: "28px 28px 24px",
         }}>
-          <div style={{ fontWeight: 700, fontSize: 16, color: "#1f2937", marginBottom: 20, textAlign: "center" }}>
+          <div style={{ fontWeight: 700, fontSize: 16, color: "#1e2638", marginBottom: 20, textAlign: "center" }}>
             🔐 Masuk ke Akun
           </div>
 
@@ -139,7 +139,7 @@ export default function LoginPageSupabase({ onLogin, clinicName }) {
         </div>
 
         {/* ── Footer kecil ── */}
-        <div style={{ marginTop: 18, fontSize: 11, color: "#9ca3af", textAlign: "center" }}>
+        <div style={{ marginTop: 18, fontSize: 11, color: "#9ca2af", textAlign: "center" }}>
           PANCANAKA V 6.3 · Kasir & E-Resep Klinik
         </div>
 

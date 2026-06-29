@@ -13,7 +13,7 @@ import {
   sendPasswordReset,
 } from "../../lib/auth";
 
-const ROLE_LABELS = { dokter: "Dokter", apoteker: "Apoteker", admin: "Admin" };
+const ROLE_LABELS = { dokter: "Dokter", apoteker: "Apoteker", admin: "Admin", manager: "Manager" };
 
 export default function PageAkunSupabase({ currentUser, onLogout }) {
   const [staff, setStaff] = useState([]);
@@ -109,7 +109,7 @@ export default function PageAkunSupabase({ currentUser, onLogout }) {
         </div>
       )}
       {notice && (
-        <div style={{ background: "var(--green-bg, #eafbf2)", border: "1.5px solid var(--green-border, #9FE1CB)", color: "var(--green-text, #0f6e56)", borderRadius: "var(--r-sm)", padding: "10px 14px", fontSize: 12.5, marginBottom: 16, fontWeight: 500 }}>
+        <div style={{ background: "var(--green-bg, #e9fcf3)", border: "1.5px solid var(--green-border, #9ce4c2)", color: "var(--green-text, #0b7242)", borderRadius: "var(--r-sm)", padding: "10px 14px", fontSize: 12.5, marginBottom: 16, fontWeight: 500 }}>
           ✓ {notice}
         </div>
       )}
@@ -128,6 +128,7 @@ export default function PageAkunSupabase({ currentUser, onLogout }) {
                 <option value="dokter">Dokter</option>
                 <option value="apoteker">Apoteker</option>
                 <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
               </select>
               <input className="kk-input" placeholder="No. SIP (untuk dokter)" value={addForm.sip} onChange={(e) => setAddForm({ ...addForm, sip: e.target.value })} style={{ flex: 1 }} />
             </div>
@@ -143,11 +144,11 @@ export default function PageAkunSupabase({ currentUser, onLogout }) {
           <div key={s.id} className="kk-card" style={{ padding: "16px 18px", display: "flex", alignItems: "center", gap: 14, opacity: s.active ? 1 : 0.6 }}>
             <div style={{
               width: 42, height: 42, borderRadius: "50%", flexShrink: 0,
-              background: s.role === "dokter" ? "var(--blue-bg)" : s.role === "admin" ? "var(--purple-bg)" : "var(--purple-bg)",
+              background: s.role === "dokter" ? "var(--blue-bg)" : (s.role === "admin" || s.role === "manager") ? "var(--purple-bg)" : "var(--purple-bg)",
               border: "1.5px solid var(--blue-border)",
               display: "flex", alignItems: "center", justifyContent: "center", fontSize: 19,
             }}>
-              {s.role === "dokter" ? "🩺" : s.role === "admin" ? "🛠️" : "⚗️"}
+              {s.role === "dokter" ? "🩺" : s.role === "admin" ? "🛠️" : s.role === "manager" ? "📊" : "⚗️"}
             </div>
 
             {editingId === s.id ? (
@@ -157,6 +158,7 @@ export default function PageAkunSupabase({ currentUser, onLogout }) {
                   <option value="dokter">Dokter</option>
                   <option value="apoteker">Apoteker</option>
                   <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
                 </select>
                 <div style={{ display: "flex", gap: 8 }}>
                   <button className="kk-btn kk-btn-primary kk-btn-sm" onClick={() => handleSaveEdit(s.id)}>Simpan</button>
@@ -167,7 +169,7 @@ export default function PageAkunSupabase({ currentUser, onLogout }) {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontWeight: 600, fontSize: 14.5 }}>{s.full_name}</span>
-                  {s.id === currentUser?.id && <span style={{ fontSize: 10.5, fontWeight: 700, color: "#0f6e56", background: "#eafbf2", borderRadius: 20, padding: "1px 8px" }}>Anda</span>}
+                  {s.id === currentUser?.id && <span style={{ fontSize: 10.5, fontWeight: 700, color: "#0b7242", background: "#e9fcf3", borderRadius: 20, padding: "1px 8px" }}>Anda</span>}
                   {!s.active && <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--red-text)", background: "var(--red-bg)", borderRadius: 20, padding: "1px 8px" }}>Nonaktif</span>}
                 </div>
                 <div style={{ fontSize: 12.5, color: "var(--text-secondary)", marginTop: 2 }}>{ROLE_LABELS[s.role]}{s.sip ? ` · SIP: ${s.sip}` : ""}</div>

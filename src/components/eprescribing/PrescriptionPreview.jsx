@@ -86,7 +86,7 @@ export default function PrescriptionPreview({ prescription, printSettings, onClo
           onClick={handlePrint}
           style={{
             padding: "11px 0",
-            background: "#185FA5",
+            background: "#1240ab",
             color: "#fff",
             border: "none",
             borderRadius: 8,
@@ -117,11 +117,11 @@ export default function PrescriptionPreview({ prescription, printSettings, onClo
           style={{
             marginTop: 6,
             padding: "8px 10px",
-            background: "#FAEEDA",
-            border: "0.5px solid #FAC775",
+            background: "#fbf1d9",
+            border: "0.5px solid #ffd470",
             borderRadius: 6,
             fontSize: 11,
-            color: "#854F0B",
+            color: "#8a6206",
             lineHeight: 1.5,
           }}
         >
@@ -205,7 +205,7 @@ export default function PrescriptionPreview({ prescription, printSettings, onClo
             <span style={{ fontWeight: 500 }}>{patientGender === "L" ? "Laki-laki" : patientGender === "P" ? "Perempuan" : "-"}</span>
           </div>
           {allergies && (
-            <div style={{ display: "flex", gap: 4, marginTop: 2, fontSize: Math.round(fontSize * 0.9), color: "#c00" }}>
+            <div style={{ display: "flex", gap: 4, marginTop: 2, fontSize: Math.round(fontSize * 0.9), color: "#cc000a" }}>
               <span style={{ minWidth: 60 }}>Alergi</span>
               <span>:</span>
               <span style={{ fontWeight: 500 }}>{allergies}</span>

@@ -76,9 +76,9 @@ export default function PagePrescriptionSettings({ printSettings, setPrintSettin
           style={{
             padding: "8px 16px",
             borderRadius: 8,
-            border: "0.5px solid #185FA5",
-            background: "#E6F1FB",
-            color: "#185FA5",
+            border: "0.5px solid #1240ab",
+            background: "#e5ecfc",
+            color: "#1240ab",
             cursor: "pointer",
             fontSize: 13,
             fontWeight: 500,
@@ -89,7 +89,7 @@ export default function PagePrescriptionSettings({ printSettings, setPrintSettin
       </div>
 
       {saved && (
-        <div style={{ background: "#EAF3DE", border: "0.5px solid #9FE1CB", borderRadius: 8, padding: "10px 16px", marginBottom: 16, color: "#3B6D11", fontSize: 14 }}>
+        <div style={{ background: "#ddf4e9", border: "0.5px solid #9ce4c2", borderRadius: 8, padding: "10px 16px", marginBottom: 16, color: "#0d7142", fontSize: 14 }}>
           ✅ Pengaturan resep berhasil disimpan!
         </div>
       )}
@@ -114,7 +114,7 @@ export default function PagePrescriptionSettings({ printSettings, setPrintSettin
                 <input type="file" accept="image/*" onChange={handleLogo} style={{ display: "none" }} />
               </label>
               {form.logo && (
-                <button onClick={() => setField("logo", "")} style={{ padding: "7px 14px", borderRadius: 6, border: "0.5px solid var(--color-border-secondary)", background: "var(--color-background-secondary)", cursor: "pointer", fontSize: 12, color: "#A32D2D" }}>
+                <button onClick={() => setField("logo", "")} style={{ padding: "7px 14px", borderRadius: 6, border: "0.5px solid var(--color-border-secondary)", background: "var(--color-background-secondary)", cursor: "pointer", fontSize: 12, color: "#a8282f" }}>
                   Hapus
                 </button>
               )}
@@ -197,7 +197,7 @@ export default function PagePrescriptionSettings({ printSettings, setPrintSettin
       <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
         <button
           onClick={handleSave}
-          style={{ flex: 1, padding: "13px 0", background: "#185FA5", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", fontWeight: 600, fontSize: 15 }}
+          style={{ flex: 1, padding: "13px 0", background: "#1240ab", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", fontWeight: 600, fontSize: 15 }}
         >
           💾 Simpan Pengaturan Resep
         </button>

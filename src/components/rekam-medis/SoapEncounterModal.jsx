@@ -150,7 +150,7 @@ export default function SoapEncounterModal({ patient, encounter, doctors, doctor
         <div style={{ padding: 24, flex: 1, overflowY: "auto" }}>
           {/* Header kunjungan */}
           <div style={{ ...sectionStyle }}>
-            <div style={sectionHeaderStyle("#374151", "#f3f4f6")}>📅 Data Kunjungan</div>
+            <div style={sectionHeaderStyle("#363e52", "#f3f4f6")}>📅 Data Kunjungan</div>
             <div style={{ ...sectionBodyStyle, gridTemplateColumns: "1fr 1fr 1fr 1fr" }}>
               <Field label="Ruang Tujuan" cols={2}>
                 <input className="kk-input" value={soap.roomDestination} onChange={(e) => set("roomDestination", e.target.value)} placeholder="cth: Poli Umum, IGD..." />
@@ -178,7 +178,7 @@ export default function SoapEncounterModal({ patient, encounter, doctors, doctor
 
           {/* S */}
           <div style={sectionStyle}>
-            <div style={sectionHeaderStyle("#1d4ed8", "#eff6ff")}>S — Anamnesis (Subjective)</div>
+            <div style={sectionHeaderStyle("#1652df", "#eff4ff")}>S — Anamnesis (Subjective)</div>
             <div style={sectionBodyStyle}>
               <Field label="Keluhan Utama">
                 <textarea className="kk-input" rows={3} style={{ resize: "vertical" }} value={soap.chiefComplaint} onChange={(e) => set("chiefComplaint", e.target.value)} placeholder="Keluhan yang disampaikan pasien..." />
@@ -188,7 +188,7 @@ export default function SoapEncounterModal({ patient, encounter, doctors, doctor
 
           {/* O */}
           <div style={sectionStyle}>
-            <div style={sectionHeaderStyle("#9a3412", "#fff7ed")}>O — Vital Sign & Pemeriksaan (Objective)</div>
+            <div style={sectionHeaderStyle("#9f730d", "#fffaed")}>O — Vital Sign & Pemeriksaan (Objective)</div>
             <div style={sectionBodyStyle}>
               <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", textDecoration: "underline" }}>Vital Sign</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 10 }}>
@@ -211,7 +211,7 @@ export default function SoapEncounterModal({ patient, encounter, doctors, doctor
 
           {/* A */}
           <div style={sectionStyle}>
-            <div style={sectionHeaderStyle("#166534", "#f0fdf4")}>A — Diagnosis (Assessment)</div>
+            <div style={sectionHeaderStyle("#136840", "#effef7")}>A — Diagnosis (Assessment)</div>
             <div style={sectionBodyStyle}>
               <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 10 }}>
                 <Field label="Diagnosis"><input className="kk-input" value={soap.diagnosis} onChange={(e) => set("diagnosis", e.target.value)} placeholder="cth: ISPA, Hipertensi Gr. I..." /></Field>
@@ -228,7 +228,7 @@ export default function SoapEncounterModal({ patient, encounter, doctors, doctor
 
           {/* P */}
           <div style={{ ...sectionStyle, marginBottom: 0 }}>
-            <div style={sectionHeaderStyle("#92400e", "#fffbeb")}>P — Rencana Asuhan (Plan)</div>
+            <div style={sectionHeaderStyle("#976d09", "#fff9eb")}>P — Rencana Asuhan (Plan)</div>
             <div style={sectionBodyStyle}>
               <Field label="Terapi">
                 <textarea className="kk-input" rows={3} style={{ resize: "vertical" }} value={soap.therapyPlan} onChange={(e) => set("therapyPlan", e.target.value)} placeholder="Rencana terapi. Untuk resep obat detail, gunakan menu E-Resep Dokter." />
@@ -254,10 +254,10 @@ export default function SoapEncounterModal({ patient, encounter, doctors, doctor
             <div style={{
               margin: "12px 24px 0",
               padding: "10px 14px",
-              background: "#f0fdf4",
-              border: "1.5px solid #86efac",
+              background: "#effef7",
+              border: "1.5px solid #82f3be",
               borderRadius: "var(--r-sm)",
-              color: "#166534",
+              color: "#136840",
               fontSize: 13, fontWeight: 600,
               display: "flex", alignItems: "center", gap: 8,
             }}>
@@ -271,9 +271,9 @@ export default function SoapEncounterModal({ patient, encounter, doctors, doctor
               margin: "12px 24px 0",
               padding: "10px 14px",
               background: "#fef2f2",
-              border: "1.5px solid #fca5a5",
+              border: "1.5px solid #ffa2a7",
               borderRadius: "var(--r-sm)",
-              color: "#991b1b",
+              color: "#9e161d",
               fontSize: 13, fontWeight: 600,
               lineHeight: 1.5,
             }}>

@@ -30,14 +30,14 @@ function FieldLabel({ children, required, hint }) {
   return (
     <label className="kk-field-label">
       {children}
-      {required && <span style={{ color: "#ef4444", marginLeft: 2 }}>*</span>}
+      {required && <span style={{ color: "#f63d46", marginLeft: 2 }}>*</span>}
       {hint && <span style={{ fontWeight: 400, color: "var(--text-muted)", marginLeft: 4 }}>{hint}</span>}
     </label>
   );
 }
 function ErrorMsg({ msg }) {
   if (!msg) return null;
-  return <div style={{ fontSize: 11.5, color: "#ef4444", marginTop: 3, fontWeight: 500 }}>{msg}</div>;
+  return <div style={{ fontSize: 11.5, color: "#f63d46", marginTop: 3, fontWeight: 500 }}>{msg}</div>;
 }
 function SectionHeader({ icon, label, count }) {
   return (
@@ -95,11 +95,11 @@ function MedicineRowExt({ med, index, onUpdate, onRemove }) {
         <label style={{
           display: "flex", alignItems: "center", gap: 5,
           fontSize: 12.5, cursor: "pointer",
-          color: med.compounded ? "#92400e" : "var(--text-secondary)",
+          color: med.compounded ? "#976d09" : "var(--text-secondary)",
           fontWeight: med.compounded ? 600 : 400,
           userSelect: "none",
-          background: med.compounded ? "#fef3c7" : "transparent",
-          border: med.compounded ? "1px solid #fcd34d" : "1px solid transparent",
+          background: med.compounded ? "#ffeec6" : "transparent",
+          border: med.compounded ? "1px solid #ffc94a" : "1px solid transparent",
           borderRadius: 20, padding: "2px 10px 2px 6px",
           transition: "all 0.15s",
         }}>
@@ -107,7 +107,7 @@ function MedicineRowExt({ med, index, onUpdate, onRemove }) {
             type="checkbox"
             checked={med.compounded || false}
             onChange={(e) => update("compounded", e.target.checked)}
-            style={{ accentColor: "#f59e0b", width: 13, height: 13 }}
+            style={{ accentColor: "#feb302", width: 13, height: 13 }}
           />
           🧪 Racikan
         </label>
@@ -299,7 +299,7 @@ export default function PageEResepDokter({
           <span style={{ fontSize: 18 }}>✅</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 600, color: "var(--green-text)", fontSize: 14 }}>Resep tersimpan & diteruskan ke Apoteker!</div>
-            <div style={{ color: "#166534", fontSize: 12.5, marginTop: 1 }}>{success.prescriptionNumber} · {success.patientName} · Status: <strong>Menunggu Dispensing</strong></div>
+            <div style={{ color: "#136840", fontSize: 12.5, marginTop: 1 }}>{success.prescriptionNumber} · {success.patientName} · Status: <strong>Menunggu Dispensing</strong></div>
           </div>
           <button onClick={() => setHistoryPreview(success)} className="kk-btn kk-btn-sm" style={{ background: "#fff", border: "1.5px solid var(--green-border)", color: "var(--green-text)" }}>🖨️ Cetak</button>
           <button onClick={() => setSuccess(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--green-text)", fontSize: 18, padding: "0 4px" }}>✕</button>
@@ -359,7 +359,7 @@ export default function PageEResepDokter({
                 value={form.allergies}
                 onChange={(e) => setField("allergies", e.target.value)}
                 placeholder="cth: Penisilin, NSAID, Sulfa..."
-                style={{ background: "#fff", borderColor: form.allergies ? "#ef4444" : "var(--border-strong)", color: form.allergies ? "#b91c1c" : undefined, fontWeight: form.allergies ? 600 : 400, fontSize: 13 }}
+                style={{ background: "#fff", borderColor: form.allergies ? "#f63d46" : "var(--border-strong)", color: form.allergies ? "#bf161e" : undefined, fontWeight: form.allergies ? 600 : 400, fontSize: 13 }}
               />
             </div>
           </div>
@@ -400,11 +400,11 @@ export default function PageEResepDokter({
             </div>
 
             {/* Catatan untuk Apoteker — highlighted */}
-            <div style={{ padding: "12px 14px", background: "#fffbeb", border: "2px solid #f59e0b", borderRadius: "var(--r-sm)" }}>
+            <div style={{ padding: "12px 14px", background: "#fff9eb", border: "2px solid #feb302", borderRadius: "var(--r-sm)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
                 <span style={{ fontSize: 14 }}>💬</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "#92400e" }}>Catatan untuk Apoteker</span>
-                <span style={{ fontSize: 11, color: "#b45309", fontWeight: 400, marginLeft: 4 }}>(hanya dilihat apoteker)</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#976d09" }}>Catatan untuk Apoteker</span>
+                <span style={{ fontSize: 11, color: "#bb8302", fontWeight: 400, marginLeft: 4 }}>(hanya dilihat apoteker)</span>
               </div>
               <textarea
                 className="kk-input"
@@ -412,7 +412,7 @@ export default function PageEResepDokter({
                 onChange={(e) => setField("notesForPharmacist", e.target.value)}
                 placeholder={"cth:\n• Mohon edukasi cara penggunaan\n• Pasien alergi NSAID\n• Jika obat kosong boleh substitusi generik"}
                 rows={4}
-                style={{ resize: "vertical", minHeight: 80, fontSize: 13, lineHeight: 1.6, background: "#fff", borderColor: "#f59e0b" }}
+                style={{ resize: "vertical", minHeight: 80, fontSize: 13, lineHeight: 1.6, background: "#fff", borderColor: "#feb302" }}
               />
             </div>
           </div>
@@ -422,7 +422,7 @@ export default function PageEResepDokter({
             <button className="kk-btn kk-btn-primary kk-btn-lg kk-btn-block" onClick={handleSaveAndPrint}>
               💾 Simpan &amp; Cetak Resep
             </button>
-            <button className="kk-btn kk-btn-secondary kk-btn-block" onClick={handleSave} style={{ borderColor: "var(--green-border)", color: "#166534", background: "var(--green-bg)" }}>
+            <button className="kk-btn kk-btn-secondary kk-btn-block" onClick={handleSave} style={{ borderColor: "var(--green-border)", color: "#136840", background: "var(--green-bg)" }}>
               📤 Simpan &amp; Kirim ke Apoteker
             </button>
             <button className="kk-btn kk-btn-ghost kk-btn-block" onClick={() => { setForm(emptyForm()); setErrors({}); setSuccess(null); }} style={{ fontSize: 12.5 }}>
@@ -524,10 +524,10 @@ export default function PageEResepDokter({
 // Status badge helper (shared)
 export function RxStatusBadge({ status, small }) {
   const map = {
-    MENUNGGU_DISPENSING: { label: "Menunggu Dispensing", color: "#92400e", bg: "#fef3c7", border: "#fcd34d" },
-    SEDANG_DISIAPKAN:    { label: "Sedang Disiapkan",    color: "#1d4ed8", bg: "#eff6ff", border: "#93c5fd" },
-    SIAP_DIAMBIL:        { label: "Siap Diambil",        color: "#065f46", bg: "#ecfdf5", border: "#6ee7b7" },
-    SUDAH_DISERAHKAN:    { label: "Sudah Diserahkan",    color: "#374151", bg: "#f3f4f6", border: "#d1d5db" },
+    MENUNGGU_DISPENSING: { label: "Menunggu Dispensing", color: "#976d09", bg: "#ffeec6", border: "#ffc94a" },
+    SEDANG_DISIAPKAN:    { label: "Sedang Disiapkan",    color: "#1652df", bg: "#eff4ff", border: "#91b2ff" },
+    SIAP_DIAMBIL:        { label: "Siap Diambil",        color: "#026336", bg: "#ebfef5", border: "#69ecaf" },
+    SUDAH_DISERAHKAN:    { label: "Sudah Diserahkan",    color: "#363e52", bg: "#f3f4f6", border: "#d1d4db" },
   };
   const s = map[status] || map["MENUNGGU_DISPENSING"];
   return (

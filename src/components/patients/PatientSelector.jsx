@@ -65,10 +65,10 @@ export default function PatientSelector({ value, onChange, autoFocus, onNavigate
   };
 
   const severityStyle = {
-    ringan: { c: "#92400e", bg: "#fffbeb", b: "#fcd34d" },
-    sedang: { c: "#9a3412", bg: "#fff7ed", b: "#fdba74" },
-    berat: { c: "#991b1b", bg: "#fef2f2", b: "#fca5a5" },
-    "tidak diketahui": { c: "#374151", bg: "#f3f4f6", b: "#d1d5db" },
+    ringan: { c: "#976d09", bg: "#fff9eb", b: "#ffc94a" },
+    sedang: { c: "#9f730d", bg: "#fffaed", b: "#ffd572" },
+    berat: { c: "#9e161d", bg: "#fef2f2", b: "#ffa2a7" },
+    "tidak diketahui": { c: "#363e52", bg: "#f3f4f6", b: "#d1d4db" },
   };
 
   return (

@@ -35,7 +35,7 @@ function FieldLabel({ children, required, hint }) {
   return (
     <label className="kk-field-label">
       {children}
-      {required && <span style={{ color: "#ef4444", marginLeft: 2 }}>*</span>}
+      {required && <span style={{ color: "#f63d46", marginLeft: 2 }}>*</span>}
       {hint && <span style={{ fontWeight: 400, color: "var(--text-muted)", marginLeft: 4 }}>{hint}</span>}
     </label>
   );
@@ -43,7 +43,7 @@ function FieldLabel({ children, required, hint }) {
 
 function ErrorMsg({ msg }) {
   if (!msg) return null;
-  return <div style={{ fontSize: 11.5, color: "#ef4444", marginTop: 3, fontWeight: 500 }}>{msg}</div>;
+  return <div style={{ fontSize: 11.5, color: "#f63d46", marginTop: 3, fontWeight: 500 }}>{msg}</div>;
 }
 
 function SectionHeader({ icon, label, count }) {
@@ -200,7 +200,7 @@ export default function PageEPrescribing({
           <span style={{ fontSize: 18 }}>✅</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 600, color: "var(--green-text)", fontSize: 14 }}>Resep disimpan!</div>
-            <div style={{ color: "#166534", fontSize: 12.5, marginTop: 1 }}>{success.prescriptionNumber} · {success.patientName}</div>
+            <div style={{ color: "#136840", fontSize: 12.5, marginTop: 1 }}>{success.prescriptionNumber} · {success.patientName}</div>
           </div>
           <button onClick={() => setHistoryPreview(success)} className="kk-btn kk-btn-sm" style={{ background: "#fff", border: "1.5px solid var(--green-border)", color: "var(--green-text)" }}>🖨️ Cetak</button>
           <button onClick={() => setSuccess(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--green-text)", fontSize: 18, padding: "0 4px" }}>✕</button>
@@ -255,7 +255,7 @@ export default function PageEPrescribing({
                 value={form.allergies}
                 onChange={(e) => setField("allergies", e.target.value)}
                 placeholder="cth: Penisilin, Sulfa, Aspirin..."
-                style={{ background: "#fff", borderColor: form.allergies ? "#ef4444" : "var(--border-strong)", color: form.allergies ? "#b91c1c" : undefined, fontWeight: form.allergies ? 600 : 400, fontSize: 13 }}
+                style={{ background: "#fff", borderColor: form.allergies ? "#f63d46" : "var(--border-strong)", color: form.allergies ? "#bf161e" : undefined, fontWeight: form.allergies ? 600 : 400, fontSize: 13 }}
               />
             </div>
           </div>

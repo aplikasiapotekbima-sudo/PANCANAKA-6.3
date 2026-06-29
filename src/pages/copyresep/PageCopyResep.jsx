@@ -59,7 +59,7 @@ function FieldLabel({ children, required, hint }) {
   return (
     <label className="kk-field-label">
       {children}
-      {required && <span style={{ color: "#ef4444", marginLeft: 2 }}>*</span>}
+      {required && <span style={{ color: "#f63d46", marginLeft: 2 }}>*</span>}
       {hint && <span style={{ fontWeight: 400, color: "var(--text-muted)", marginLeft: 4 }}>{hint}</span>}
     </label>
   );
@@ -67,7 +67,7 @@ function FieldLabel({ children, required, hint }) {
 
 function ErrorMsg({ msg }) {
   if (!msg) return null;
-  return <div style={{ fontSize: 11.5, color: "#ef4444", marginTop: 3, fontWeight: 500 }}>{msg}</div>;
+  return <div style={{ fontSize: 11.5, color: "#f63d46", marginTop: 3, fontWeight: 500 }}>{msg}</div>;
 }
 
 function SectionHeader({ icon, label, count }) {
@@ -408,13 +408,13 @@ export default function PageCopyResep({
       </div>
 
       {editId && (
-        <div style={{ background: "#FAEEDA", border: "1.5px solid #FAC775", borderRadius: "var(--r-md)", padding: "12px 18px", marginBottom: 16, display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ background: "#fbf1d9", border: "1.5px solid #ffd470", borderRadius: "var(--r-md)", padding: "12px 18px", marginBottom: 16, display: "flex", alignItems: "center", gap: 12 }}>
           <span style={{ fontSize: 18 }}>✏️</span>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 600, color: "#854F0B", fontSize: 14 }}>Mode Edit</div>
-            <div style={{ color: "#854F0B", fontSize: 12.5, marginTop: 1 }}>Anda sedang mengedit salinan resep. Simpan untuk memperbarui data.</div>
+            <div style={{ fontWeight: 600, color: "#8a6206", fontSize: 14 }}>Mode Edit</div>
+            <div style={{ color: "#8a6206", fontSize: 12.5, marginTop: 1 }}>Anda sedang mengedit salinan resep. Simpan untuk memperbarui data.</div>
           </div>
-          <button onClick={() => { setForm(emptyForm()); setEditId(null); setErrors({}); }} className="kk-btn kk-btn-sm" style={{ background: "#fff", border: "1.5px solid #FAC775", color: "#854F0B" }}>
+          <button onClick={() => { setForm(emptyForm()); setEditId(null); setErrors({}); }} className="kk-btn kk-btn-sm" style={{ background: "#fff", border: "1.5px solid #ffd470", color: "#8a6206" }}>
             ✕ Batal Edit
           </button>
         </div>
@@ -425,7 +425,7 @@ export default function PageCopyResep({
           <span style={{ fontSize: 18 }}>✅</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 600, color: "var(--green-text)", fontSize: 14 }}>Salinan Resep disimpan!</div>
-            <div style={{ color: "#166534", fontSize: 12.5, marginTop: 1 }}>{success.nomorCopyResep} · {success.pasien?.nama}</div>
+            <div style={{ color: "#136840", fontSize: 12.5, marginTop: 1 }}>{success.nomorCopyResep} · {success.pasien?.nama}</div>
           </div>
           <button onClick={() => setHistoryPreview(success)} className="kk-btn kk-btn-sm" style={{ background: "#fff", border: "1.5px solid var(--green-border)", color: "var(--green-text)" }}>🖨️ Cetak</button>
           <button onClick={() => setSuccess(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--green-text)", fontSize: 18, padding: "0 4px" }}>✕</button>
