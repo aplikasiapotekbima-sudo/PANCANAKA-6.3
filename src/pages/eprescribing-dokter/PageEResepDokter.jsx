@@ -12,6 +12,39 @@ function getPrescriptionNumber(counter) {
   return `RX/${y}${m}/${String(counter).padStart(4, "0")}`;
 }
 
+// ── Racikan shortcut presets (saved per-device in localStorage) ────
+const RACIKAN_PRESETS_KEY = "kk_racikan_presets";
+const defaultRacikanPresets = () => ([
+  {
+    id: "default-a",
+    name: "Racikan A",
+    text: "Racikan:\nParacetamol 500mg\nCTM 4mg\nDextromethorphan 15mg\nm.f. pulv. dtd No. X\n3 x sehari 1 bungkus",
+  },
+  {
+    id: "default-b",
+    name: "Racikan B",
+    text: "Racikan:\nAmoxicillin 250mg\nGG 100mg\nm.f. pulv. dtd No. X\n3 x sehari 1 bungkus",
+  },
+]);
+function loadRacikanPresets() {
+  try {
+    const raw = window.localStorage.getItem(RACIKAN_PRESETS_KEY);
+    if (!raw) return defaultRacikanPresets();
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    return defaultRacikanPresets();
+  } catch {
+    return defaultRacikanPresets();
+  }
+}
+function saveRacikanPresets(presets) {
+  try {
+    window.localStorage.setItem(RACIKAN_PRESETS_KEY, JSON.stringify(presets));
+  } catch {
+    // localStorage tidak tersedia — abaikan
+  }
+}
+
 const emptyMed = () => ({
   text: "",          // freestyle teks bebas dokter
   compounded: false, // flag racikan
@@ -54,7 +87,7 @@ function SectionHeader({ icon, label, count }) {
 }
 
 // ── Medicine Row with compounded + unit ──────────────────────────
-function MedicineRowExt({ med, index, onUpdate, onRemove }) {
+function MedicineRowExt({ med, index, onUpdate, onRemove, onOpenRacikan }) {
   const update = (field, val) => onUpdate(index, { ...med, [field]: val });
 
   return (
@@ -106,7 +139,11 @@ function MedicineRowExt({ med, index, onUpdate, onRemove }) {
           <input
             type="checkbox"
             checked={med.compounded || false}
-            onChange={(e) => update("compounded", e.target.checked)}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              update("compounded", checked);
+              if (checked) onOpenRacikan && onOpenRacikan(index);
+            }}
             style={{ accentColor: "#feb302", width: 13, height: 13 }}
           />
           🧪 Racikan
@@ -156,8 +193,159 @@ function MedicineRowExt({ med, index, onUpdate, onRemove }) {
   );
 }
 
+// ── Racikan shortcut picker modal ───────────────────────────────────
+function RacikanPickerModal({ presets, onInsert, onClose, onSavePresets }) {
+  const [manageMode, setManageMode] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [draftName, setDraftName] = useState("");
+  const [draftText, setDraftText] = useState("");
+
+  const startNew = () => {
+    setEditingId("__new__");
+    setDraftName("");
+    setDraftText("");
+  };
+  const startEdit = (p) => {
+    setEditingId(p.id);
+    setDraftName(p.name);
+    setDraftText(p.text);
+  };
+  const cancelEdit = () => {
+    setEditingId(null);
+    setDraftName("");
+    setDraftText("");
+  };
+  const saveDraft = () => {
+    if (!draftName.trim() || !draftText.trim()) return;
+    let next;
+    if (editingId === "__new__") {
+      next = [...presets, { id: `r-${Date.now()}`, name: draftName.trim(), text: draftText }];
+    } else {
+      next = presets.map((p) => (p.id === editingId ? { ...p, name: draftName.trim(), text: draftText } : p));
+    }
+    onSavePresets(next);
+    cancelEdit();
+  };
+  const deletePreset = (id) => {
+    if (window.confirm("Hapus shortcut racikan ini?")) {
+      onSavePresets(presets.filter((p) => p.id !== id));
+    }
+  };
+
+  return (
+    <div
+      style={{
+        position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)",
+        zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center",
+        padding: 16,
+      }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div style={{
+        background: "#fff", borderRadius: "var(--r-lg, 16px)",
+        border: "2px solid #ffc94a",
+        boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+        padding: "22px 24px", maxWidth: 460, width: "100%",
+        maxHeight: "85vh", overflowY: "auto",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+          <span style={{ fontSize: 20 }}>🧪</span>
+          <span style={{ fontSize: 17, fontWeight: 800, color: "#976d09" }}>Shortcut Racikan</span>
+        </div>
+        <div style={{ fontSize: 12.5, color: "var(--text-muted)", marginBottom: 16 }}>
+          Pilih shortcut untuk langsung diisi ke resep, atau kelola daftar shortcut.
+        </div>
+
+        {!manageMode && (
+          <>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+              {presets.length === 0 && (
+                <div style={{ fontSize: 12.5, color: "var(--text-muted)", fontStyle: "italic" }}>
+                  Belum ada shortcut racikan. Tambah lewat tombol "Kelola Shortcut" di bawah.
+                </div>
+              )}
+              {presets.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => onInsert(p.text)}
+                  style={{
+                    textAlign: "left", border: "1.5px solid #ffc94a", background: "#fff9eb",
+                    borderRadius: "var(--r-sm)", padding: "10px 14px", cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#ffeec6")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "#fff9eb")}
+                >
+                  <div style={{ fontWeight: 700, fontSize: 13.5, color: "#976d09", marginBottom: 3 }}>{p.name}</div>
+                  <div style={{ fontSize: 11.5, color: "var(--text-secondary)", whiteSpace: "pre-line", lineHeight: 1.5 }}>
+                    {p.text.length > 90 ? p.text.slice(0, 90) + "…" : p.text}
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 8, justifyContent: "space-between" }}>
+              <button className="kk-btn kk-btn-sm kk-btn-secondary" onClick={() => setManageMode(true)}>
+                ⚙️ Kelola Shortcut
+              </button>
+              <button className="kk-btn kk-btn-sm kk-btn-ghost" onClick={onClose}>
+                Lewati / Tutup
+              </button>
+            </div>
+          </>
+        )}
+
+        {manageMode && (
+          <>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+              {presets.map((p) => (
+                <div key={p.id} style={{ border: "1.5px solid var(--border-mid)", borderRadius: "var(--r-sm)", padding: "8px 12px" }}>
+                  {editingId === p.id ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      <input className="kk-input" value={draftName} onChange={(e) => setDraftName(e.target.value)} placeholder="Nama shortcut" style={{ fontSize: 13 }} />
+                      <textarea className="kk-input" value={draftText} onChange={(e) => setDraftText(e.target.value)} rows={4} placeholder="Isi racikan..." style={{ fontSize: 12.5, lineHeight: 1.6, resize: "vertical" }} />
+                      <div style={{ display: "flex", gap: 6 }}>
+                        <button className="kk-btn kk-btn-sm" style={{ background: "#1a8f55", color: "#fff" }} onClick={saveDraft}>Simpan</button>
+                        <button className="kk-btn kk-btn-sm kk-btn-ghost" onClick={cancelEdit}>Batal</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 700, fontSize: 13 }}>{p.name}</div>
+                      </div>
+                      <button className="kk-btn kk-btn-sm kk-btn-ghost" onClick={() => startEdit(p)}>✏️</button>
+                      <button className="kk-btn kk-btn-sm kk-btn-ghost" style={{ color: "var(--red-text)" }} onClick={() => deletePreset(p.id)}>🗑️</button>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {editingId === "__new__" ? (
+                <div style={{ border: "1.5px solid #ffc94a", borderRadius: "var(--r-sm)", padding: "8px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
+                  <input className="kk-input" value={draftName} onChange={(e) => setDraftName(e.target.value)} placeholder="Nama shortcut (cth: Racikan Demam Anak)" style={{ fontSize: 13 }} />
+                  <textarea className="kk-input" value={draftText} onChange={(e) => setDraftText(e.target.value)} rows={4} placeholder="Isi racikan..." style={{ fontSize: 12.5, lineHeight: 1.6, resize: "vertical" }} />
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button className="kk-btn kk-btn-sm" style={{ background: "#1a8f55", color: "#fff" }} onClick={saveDraft}>Simpan</button>
+                    <button className="kk-btn kk-btn-sm kk-btn-ghost" onClick={cancelEdit}>Batal</button>
+                  </div>
+                </div>
+              ) : (
+                <button className="kk-btn kk-btn-sm kk-btn-secondary" onClick={startNew}>+ Tambah Shortcut Baru</button>
+              )}
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <button className="kk-btn kk-btn-sm kk-btn-ghost" onClick={() => { setManageMode(false); cancelEdit(); }}>← Kembali ke daftar</button>
+              <button className="kk-btn kk-btn-sm kk-btn-ghost" onClick={onClose}>Tutup</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ══════════════════════════════════════════════════════════════════
 export default function PageEResepDokter({
+
   doctors,
   prescriptions,
   setPrescriptions,
@@ -174,6 +362,8 @@ export default function PageEResepDokter({
   const [errors, setErrors] = useState({});
   const [previewData, setPreviewData] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [racikanPresets, setRacikanPresets] = useState(loadRacikanPresets);
+  const [racikanPickerFor, setRacikanPickerFor] = useState(null); // index of medicine row, or null
   const [historyPreview, setHistoryPreview] = useState(null);
   const [searchQ, setSearchQ] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(initialPatient || null);
@@ -293,16 +483,55 @@ export default function PageEResepDokter({
         </div>
       </div>
 
-      {/* Success banner */}
+      {/* Success popup — dark overlay + centered card */}
       {success && (
-        <div style={{ background: "var(--green-bg)", border: "1.5px solid var(--green-border)", borderRadius: "var(--r-md)", padding: "12px 18px", marginBottom: 16, display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ fontSize: 18 }}>✅</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 600, color: "var(--green-text)", fontSize: 14 }}>Resep tersimpan & diteruskan ke Apoteker!</div>
-            <div style={{ color: "#136840", fontSize: 12.5, marginTop: 1 }}>{success.prescriptionNumber} · {success.patientName} · Status: <strong>Menunggu Dispensing</strong></div>
+        <div
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)",
+            zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 16,
+          }}
+          onClick={(e) => e.target === e.currentTarget && setSuccess(null)}
+        >
+          <div style={{
+            background: "#fff", borderRadius: "var(--r-lg, 16px)",
+            border: "2px solid var(--green-border)",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+            padding: "28px 32px", maxWidth: 440, width: "100%",
+            textAlign: "center",
+          }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: "50%",
+              background: "var(--green-bg)", border: "2px solid var(--green-border)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 28, margin: "0 auto 14px",
+            }}>
+              ✅
+            </div>
+            <div style={{ fontWeight: 800, color: "var(--green-text)", fontSize: 19, marginBottom: 8 }}>
+              Resep tersimpan &amp; diteruskan ke Apoteker!
+            </div>
+            <div style={{ color: "#136840", fontSize: 14, marginBottom: 22 }}>
+              {success.prescriptionNumber} · {success.patientName}<br />
+              Status: <strong>Menunggu Dispensing</strong>
+            </div>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button
+                onClick={() => setHistoryPreview(success)}
+                className="kk-btn"
+                style={{ background: "#fff", border: "1.5px solid var(--green-border)", color: "var(--green-text)", fontWeight: 700, padding: "10px 20px" }}
+              >
+                🖨️ Cetak
+              </button>
+              <button
+                onClick={() => setSuccess(null)}
+                className="kk-btn"
+                style={{ background: "#1a8f55", border: "1.5px solid var(--green-border)", color: "#fff", fontWeight: 700, padding: "10px 20px" }}
+              >
+                Tutup
+              </button>
+            </div>
           </div>
-          <button onClick={() => setHistoryPreview(success)} className="kk-btn kk-btn-sm" style={{ background: "#fff", border: "1.5px solid var(--green-border)", color: "var(--green-text)" }}>🖨️ Cetak</button>
-          <button onClick={() => setSuccess(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--green-text)", fontSize: 18, padding: "0 4px" }}>✕</button>
         </div>
       )}
 
@@ -399,31 +628,45 @@ export default function PageEResepDokter({
               <input className="kk-input" value={form.diagnosis} onChange={(e) => setField("diagnosis", e.target.value)} placeholder="cth: ISPA, Hipertensi Gr. I, Gastritis..." />
             </div>
 
-            {/* Catatan untuk Apoteker — highlighted */}
-            <div style={{ padding: "12px 14px", background: "#fff9eb", border: "2px solid #feb302", borderRadius: "var(--r-sm)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                <span style={{ fontSize: 14 }}>💬</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "#976d09" }}>Catatan untuk Apoteker</span>
-                <span style={{ fontSize: 11, color: "#bb8302", fontWeight: 400, marginLeft: 4 }}>(hanya dilihat apoteker)</span>
-              </div>
-              <textarea
-                className="kk-input"
-                value={form.notesForPharmacist}
-                onChange={(e) => setField("notesForPharmacist", e.target.value)}
-                placeholder={"cth:\n• Mohon edukasi cara penggunaan\n• Pasien alergi NSAID\n• Jika obat kosong boleh substitusi generik"}
-                rows={4}
-                style={{ resize: "vertical", minHeight: 80, fontSize: 13, lineHeight: 1.6, background: "#fff", borderColor: "#feb302" }}
-              />
-            </div>
           </div>
 
-          {/* Action buttons */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <button className="kk-btn kk-btn-primary kk-btn-lg kk-btn-block" onClick={handleSaveAndPrint}>
-              💾 Simpan &amp; Cetak Resep
-            </button>
-            <button className="kk-btn kk-btn-secondary kk-btn-block" onClick={handleSave} style={{ borderColor: "var(--green-border)", color: "#136840", background: "var(--green-bg)" }}>
+          {/* Catatan untuk Apoteker — highlighted, enlarged, centered */}
+          <div style={{ padding: "18px 18px", background: "#fff9eb", border: "2px solid #feb302", borderRadius: "var(--r-sm)", textAlign: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 10 }}>
+              <span style={{ fontSize: 20 }}>💬</span>
+              <span style={{ fontSize: 17, fontWeight: 800, color: "#976d09" }}>Catatan untuk Apoteker</span>
+              <span style={{ fontSize: 12, color: "#bb8302", fontWeight: 400, marginLeft: 4 }}>(hanya dilihat apoteker)</span>
+            </div>
+            <textarea
+              className="kk-input"
+              value={form.notesForPharmacist}
+              onChange={(e) => setField("notesForPharmacist", e.target.value)}
+              placeholder={"cth:\n• Mohon edukasi cara penggunaan\n• Pasien alergi NSAID\n• Jika obat kosong boleh substitusi generik"}
+              rows={5}
+              style={{ resize: "vertical", minHeight: 120, fontSize: 15, lineHeight: 1.7, background: "#fff", borderColor: "#feb302", textAlign: "left" }}
+            />
+          </div>
+
+          {/* Action buttons — Kirim ke Apoteker is the primary action */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>
+            <button
+              className="kk-btn kk-btn-block"
+              onClick={handleSave}
+              style={{
+                borderColor: "var(--green-border)",
+                color: "#fff",
+                background: "#1a8f55",
+                fontSize: 18,
+                fontWeight: 800,
+                padding: "16px 20px",
+                borderRadius: "var(--r-sm)",
+                boxShadow: "0 2px 6px rgba(26,143,85,0.35)",
+              }}
+            >
               📤 Simpan &amp; Kirim ke Apoteker
+            </button>
+            <button className="kk-btn kk-btn-secondary kk-btn-block" onClick={handleSaveAndPrint} style={{ fontSize: 13 }}>
+              💾 Simpan &amp; Cetak Resep
             </button>
             <button className="kk-btn kk-btn-ghost kk-btn-block" onClick={() => { setForm(emptyForm()); setErrors({}); setSuccess(null); }} style={{ fontSize: 12.5 }}>
               🔄 Bersihkan Form
@@ -444,7 +687,7 @@ export default function PageEResepDokter({
 
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {form.medicines.map((med, i) => (
-                <MedicineRowExt key={i} med={med} index={i} onUpdate={updateMed} onRemove={removeMed} />
+                <MedicineRowExt key={i} med={med} index={i} onUpdate={updateMed} onRemove={removeMed} onOpenRacikan={setRacikanPickerFor} />
               ))}
             </div>
 
@@ -517,6 +760,20 @@ export default function PageEResepDokter({
 
       {previewData && <PrescriptionPreview prescription={previewData} printSettings={printSettings} onClose={() => setPreviewData(null)} />}
       {historyPreview && <PrescriptionPreview prescription={historyPreview} printSettings={printSettings} onClose={() => setHistoryPreview(null)} />}
+      {racikanPickerFor !== null && (
+        <RacikanPickerModal
+          presets={racikanPresets}
+          onInsert={(text) => {
+            const i = racikanPickerFor;
+            const med = form.medicines[i];
+            const merged = med?.text?.trim() ? `${med.text}\n${text}` : text;
+            updateMed(i, { ...med, text: merged });
+            setRacikanPickerFor(null);
+          }}
+          onClose={() => setRacikanPickerFor(null)}
+          onSavePresets={(next) => { setRacikanPresets(next); saveRacikanPresets(next); }}
+        />
+      )}
     </div>
   );
 }
